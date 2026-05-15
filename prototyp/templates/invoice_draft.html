@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rechnungsentwurf {{ project.project_number }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main class="container">
+        <p><a href="{{ url_for('project_detail', project_id=project.id) }}">← Zurück zum Projekt</a></p>
+
+        <h1>Rechnungsentwurf</h1>
+
+        <section class="card">
+            <h2>Projektbezug</h2>
+            <p><strong>Projekt:</strong> {{ project.name }}</p>
+            <p><strong>Projektnummer:</strong> {{ project.project_number }}</p>
+            <p><strong>Kunde:</strong> {{ project.customer }}</p>
+            <p><strong>Stundensatz:</strong> {{ "%.2f"|format(project.hourly_rate) }} €</p>
+        </section>
+
+        <section class="card">
+            <h2>Freigegebene Leistungen</h2>
+
+            {% if approved_services %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Datum</th>
+                        <th>Beschreibung</th>
+                        <th>Stunden</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for service in approved_services %}
+                    <tr>
+                        <td>{{ service.date }}</td>
+                        <td>{{ service.description }}</td>
+                        <td>{{ service.hours }}</td>
+                        <td>{{ service.status }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <p><strong>Gesamtstunden:</strong> {{ "%.2f"|format(total_hours) }}</p>
+            <p><strong>Entwurfsbetrag:</strong> {{ "%.2f"|format(total_amount) }} €</p>
+            {% else %}
+            <p>Für dieses Projekt liegen aktuell keine freigegebenen Leistungen vor.</p>
+            {% endif %}
+        </section>
+    </main>
+</body>
+</html>

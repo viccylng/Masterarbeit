@@ -13,6 +13,7 @@ PROJECTS = [
         "invoiced": 15000.00,
         "remaining_budget": 35000.00,
         "project_manager": "Projektleitung A",
+        "hourly_rate": 120.00,
         "services": [
             {
                 "date": "2026-05-01",
@@ -38,6 +39,7 @@ PROJECTS = [
         "invoiced": 0.00,
         "remaining_budget": 30000.00,
         "project_manager": "Projektleitung B",
+        "hourly_rate": 95.00,
         "services": [
             {
                 "date": "2026-05-02",
@@ -93,6 +95,28 @@ def update_service_status(project_id, service_index):
     project["services"][service_index]["status"] = new_status
 
     return redirect(url_for("project_detail", project_id=project_id))
+
+@app.route("/projects/<int:project_id>/invoice-draft")
+def invoice_draft(project_id):
+    project = next((p for p in PROJECTS if p["id"] == project_id), None)
+    if project is None:
+        abort(404)
+
+    approved_services = [
+        service for service in project["services"]
+        if service["status"] == "freigegeben"
+    ]
+
+    total_hours = sum(service["hours"] for service in approved_services)
+    total_amount = total_hours * project["hourly_rate"]
+
+    return render_template(
+        "invoice_draft.html",
+        project=project,
+        approved_services=approved_services,
+        total_hours=total_hours,
+        total_amount=total_amount,
+    )
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -21,6 +21,8 @@
             <p><strong>Budget:</strong> {{ "%.2f"|format(project.budget) }} €</p>
             <p><strong>Verrechnet:</strong> {{ "%.2f"|format(project.invoiced) }} €</p>
             <p><strong>Restbudget:</strong> {{ "%.2f"|format(project.remaining_budget) }} €</p>
+            <p><strong>Stundensatz:</strong> {{ "%.2f"|format(project.hourly_rate) }} €</p>
+            <p><a href="{{ url_for('invoice_draft', project_id=project.id) }}">Rechnungsentwurf anzeigen</a></p>
         </section>
 
         <section class="card">
