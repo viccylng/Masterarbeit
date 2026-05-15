@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import Flask, render_template, abort, request, redirect, url_for
 
 app = Flask(__name__)
@@ -28,6 +30,13 @@ PROJECTS = [
                 "status": "erfasst"
             },
         ],
+        "audit_log": [
+            {
+                "timestamp": "2026-05-15 10:00",
+                "action": "Projekt angelegt",
+                "details": "Projekt A wurde als Beispielprojekt im Prototyp angelegt."
+            }
+        ],
     },
     {
         "id": 2,
@@ -48,8 +57,24 @@ PROJECTS = [
                 "status": "geprüft"
             },
         ],
+        "audit_log": [
+            {
+                "timestamp": "2026-05-15 10:05",
+                "action": "Projekt angelegt",
+                "details": "Projekt B wurde als Beispielprojekt im Prototyp angelegt."
+            }
+        ],
     },
 ]
+
+
+def add_audit_entry(project, action, details):
+    entry = {
+        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "action": action,
+        "details": details,
+    }
+    project["audit_log"].insert(0, entry)
 
 
 @app.route("/")
@@ -80,7 +105,14 @@ def add_service(project_id):
 
     project["services"].append(new_service)
 
+    add_audit_entry(
+        project,
+        "Leistung hinzugefügt",
+        f"{new_service['description']} mit {new_service['hours']:.1f} Stunden und Status '{new_service['status']}' wurde erfasst.",
+    )
+
     return redirect(url_for("project_detail", project_id=project_id))
+
 
 @app.route("/projects/<int:project_id>/services/<int:service_index>/update-status", methods=["POST"])
 def update_service_status(project_id, service_index):
@@ -91,10 +123,19 @@ def update_service_status(project_id, service_index):
     if service_index < 0 or service_index >= len(project["services"]):
         abort(404)
 
+    service = project["services"][service_index]
+    old_status = service["status"]
     new_status = request.form["status"]
-    project["services"][service_index]["status"] = new_status
+    service["status"] = new_status
+
+    add_audit_entry(
+        project,
+        "Status geändert",
+        f"Die Leistung '{service['description']}' wurde von '{old_status}' auf '{new_status}' gesetzt.",
+    )
 
     return redirect(url_for("project_detail", project_id=project_id))
+
 
 @app.route("/projects/<int:project_id>/invoice-draft")
 def invoice_draft(project_id):
@@ -117,6 +158,7 @@ def invoice_draft(project_id):
         total_hours=total_hours,
         total_amount=total_amount,
     )
+
 
 if __name__ == "__main__":
     app.run(debug=True)
