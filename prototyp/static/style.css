@@ -1,17 +1,85 @@
 body {
     font-family: Arial, sans-serif;
-    margin: 40px;
-    background-color: #f7f7f7;
+    margin: 0;
+    background: #f5f5f5;
+    color: #222;
 }
 
-main {
-    max-width: 900px;
-    margin: 0 auto;
-    background: white;
-    padding: 32px;
-    border-radius: 12px;
+.container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 20px;
 }
 
-h1 {
+h1, h2 {
     margin-top: 0;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    margin-top: 20px;
+}
+
+th, td {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+a {
+    color: #0b57d0;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+.service-form {
+    background: #fff;
+    padding: 16px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.form-row {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 12px;
+}
+
+.form-row label {
+    margin-bottom: 4px;
+    font-weight: bold;
+}
+
+.form-row input,
+.form-row select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    background: #0b57d0;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.9;
 }

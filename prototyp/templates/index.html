@@ -2,13 +2,45 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Lean-ERP-Prototyp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lean-ERP Prototyp</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <main>
-        <h1>Lean-ERP-Prototyp</h1>
-        <p>Technische Grundstruktur des Prototyps.</p>
+    <main class="container">
+        <h1>Projektübersicht</h1>
+        <p>Vorläufige Übersicht der im Prototyp abgebildeten Projekte.</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Projektnummer</th>
+                    <th>Projekt</th>
+                    <th>Kunde</th>
+                    <th>Status</th>
+                    <th>Budget</th>
+                    <th>Verrechnet</th>
+                    <th>Restbudget</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for project in projects %}
+                <tr>
+                    <td>
+                        <a href="{{ url_for('project_detail', project_id=project.id) }}">
+                            {{ project.project_number }}
+                        </a>
+                    </td>
+                    <td>{{ project.name }}</td>
+                    <td>{{ project.customer }}</td>
+                    <td>{{ project.status }}</td>
+                    <td>{{ "%.2f"|format(project.budget) }} €</td>
+                    <td>{{ "%.2f"|format(project.invoiced) }} €</td>
+                    <td>{{ "%.2f"|format(project.remaining_budget) }} €</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </main>
 </body>
 </html>

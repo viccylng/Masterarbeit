@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ project.name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main class="container">
+        <p><a href="{{ url_for('index') }}">← Zurück zur Übersicht</a></p>
+
+        <h1>{{ project.name }}</h1>
+
+        <section class="card">
+            <h2>Projektinformationen</h2>
+            <p><strong>Projektnummer:</strong> {{ project.project_number }}</p>
+            <p><strong>Kunde:</strong> {{ project.customer }}</p>
+            <p><strong>Status:</strong> {{ project.status }}</p>
+            <p><strong>Projektleitung:</strong> {{ project.project_manager }}</p>
+            <p><strong>Budget:</strong> {{ "%.2f"|format(project.budget) }} €</p>
+            <p><strong>Verrechnet:</strong> {{ "%.2f"|format(project.invoiced) }} €</p>
+            <p><strong>Restbudget:</strong> {{ "%.2f"|format(project.remaining_budget) }} €</p>
+        </section>
+
+        <section class="card">
+            <h2>Leistungen</h2>
+
+            <form action="{{ url_for('add_service', project_id=project.id) }}" method="post" class="service-form">
+                <div class="form-row">
+                    <label for="date">Datum</label>
+                    <input type="date" id="date" name="date" required>
+                </div>
+
+                <div class="form-row">
+                    <label for="description">Beschreibung</label>
+                    <input type="text" id="description" name="description" required>
+                </div>
+
+                <div class="form-row">
+                    <label for="hours">Stunden</label>
+                    <input type="number" id="hours" name="hours" step="0.5" required>
+                </div>
+
+                <div class="form-row">
+                    <label for="status">Status</label>
+                    <select id="status" name="status" required>
+                        <option value="erfasst">erfasst</option>
+                        <option value="geprüft">geprüft</option>
+                        <option value="freigegeben">freigegeben</option>
+                    </select>
+                </div>
+
+                <button type="submit">Leistung hinzufügen</button>
+            </form>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Datum</th>
+                        <th>Beschreibung</th>
+                        <th>Stunden</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for service in project.services %}
+                    <tr>
+                        <td>{{ service.date }}</td>
+                        <td>{{ service.description }}</td>
+                        <td>{{ service.hours }}</td>
+                        <td>
+                            <form action="{{ url_for('update_service_status', project_id=project.id, service_index=loop.index0) }}" method="post" class="inline-form">
+                                <select name="status">
+                                    <option value="erfasst" {% if service.status == "erfasst" %}selected{% endif %}>erfasst</option>
+                                    <option value="geprüft" {% if service.status == "geprüft" %}selected{% endif %}>geprüft</option>
+                                    <option value="freigegeben" {% if service.status == "freigegeben" %}selected{% endif %}>freigegeben</option>
+                                </select>
+                                <button type="submit">Speichern</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+</body>
+</html>
