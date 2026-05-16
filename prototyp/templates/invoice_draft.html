@@ -8,45 +8,90 @@
 </head>
 <body>
     <main class="container">
-        <p><a href="{{ url_for('project_detail', project_id=project.id) }}">← Zurück zum Projekt</a></p>
+        <p class="back-link">
+            <a href="{{ url_for('project_detail', project_id=project.id) }}">← Zurück zum Projekt</a>
+        </p>
 
-        <h1>Rechnungsentwurf</h1>
-
-        <section class="card">
-            <h2>Projektbezug</h2>
-            <p><strong>Projekt:</strong> {{ project.name }}</p>
-            <p><strong>Projektnummer:</strong> {{ project.project_number }}</p>
-            <p><strong>Kunde:</strong> {{ project.customer }}</p>
-            <p><strong>Stundensatz:</strong> {{ "%.2f"|format(project.hourly_rate) }} €</p>
+        <section class="page-header">
+            <div>
+                <p class="eyebrow">Rechnungsentwurf</p>
+                <h1>{{ project.name }}</h1>
+                <p class="page-description">
+                    Zusammenstellung aller freigegebenen Leistungen als Grundlage für die abrechnungsbezogene Weiterverarbeitung.
+                </p>
+            </div>
         </section>
 
         <section class="card">
-            <h2>Freigegebene Leistungen</h2>
+            <div class="card-header">
+                <h2>Projektbezug</h2>
+                <p>Relevante Eckdaten des Projekts für den Entwurf.</p>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Projekt</span>
+                    <span class="info-value">{{ project.name }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Projektnummer</span>
+                    <span class="info-value">{{ project.project_number }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Kunde</span>
+                    <span class="info-value">{{ project.customer }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Stundensatz</span>
+                    <span class="info-value">{{ "%.2f"|format(project.hourly_rate) }} €</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="card-header">
+                <h2>Freigegebene Leistungen</h2>
+                <p>Nur freigegebene Leistungen fließen in den Rechnungsentwurf ein.</p>
+            </div>
 
             {% if approved_services %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Datum</th>
-                        <th>Beschreibung</th>
-                        <th>Stunden</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for service in approved_services %}
-                    <tr>
-                        <td>{{ service.date }}</td>
-                        <td>{{ service.description }}</td>
-                        <td>{{ service.hours }}</td>
-                        <td>{{ service.status }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Datum</th>
+                            <th>Beschreibung</th>
+                            <th>Stunden</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for service in approved_services %}
+                        <tr>
+                            <td>{{ service.date }}</td>
+                            <td>{{ service.description }}</td>
+                            <td>{{ service.hours }}</td>
+                            <td>
+                                <span class="status-badge status-{{ service.status|lower|replace(' ', '-') }}">
+                                    {{ service.status }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
 
-            <p><strong>Gesamtstunden:</strong> {{ "%.2f"|format(total_hours) }}</p>
-            <p><strong>Entwurfsbetrag:</strong> {{ "%.2f"|format(total_amount) }} €</p>
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <span class="summary-label">Gesamtstunden</span>
+                    <span class="summary-value">{{ "%.2f"|format(total_hours) }}</span>
+                </div>
+                <div class="summary-card">
+                    <span class="summary-label">Entwurfsbetrag</span>
+                    <span class="summary-value">{{ "%.2f"|format(total_amount) }} €</span>
+                </div>
+            </div>
             {% else %}
             <p>Für dieses Projekt liegen aktuell keine freigegebenen Leistungen vor.</p>
             {% endif %}

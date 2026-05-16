@@ -8,39 +8,59 @@
 </head>
 <body>
     <main class="container">
-        <h1>Projektübersicht</h1>
-        <p>Vorläufige Übersicht der im Prototyp abgebildeten Projekte.</p>
+        <section class="page-header">
+            <div>
+                <p class="eyebrow">Lean-ERP Prototyp</p>
+                <h1>Projektübersicht</h1>
+                <p class="page-description">
+                    Vorläufige Übersicht der im Prototyp abgebildeten Projekte.
+                </p>
+            </div>
+        </section>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Projektnummer</th>
-                    <th>Projekt</th>
-                    <th>Kunde</th>
-                    <th>Status</th>
-                    <th>Budget</th>
-                    <th>Verrechnet</th>
-                    <th>Restbudget</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for project in projects %}
-                <tr>
-                    <td>
-                        <a href="{{ url_for('project_detail', project_id=project.id) }}">
-                            {{ project.project_number }}
-                        </a>
-                    </td>
-                    <td>{{ project.name }}</td>
-                    <td>{{ project.customer }}</td>
-                    <td>{{ project.status }}</td>
-                    <td>{{ "%.2f"|format(project.budget) }} €</td>
-                    <td>{{ "%.2f"|format(project.invoiced) }} €</td>
-                    <td>{{ "%.2f"|format(project.remaining_budget) }} €</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <section class="card">
+            <div class="card-header">
+                <h2>Projekte</h2>
+                <p>Zentrale Sicht auf Projektstatus, Budget und abrechnungsbezogene Kennzahlen.</p>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Projektnummer</th>
+                            <th>Projekt</th>
+                            <th>Kunde</th>
+                            <th>Status</th>
+                            <th>Budget</th>
+                            <th>Verrechnet</th>
+                            <th>Restbudget</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for project in projects %}
+                        <tr>
+                            <td>
+                                <a href="{{ url_for('project_detail', project_id=project.id) }}">
+                                    {{ project.project_number }}
+                                </a>
+                            </td>
+                            <td>{{ project.name }}</td>
+                            <td>{{ project.customer }}</td>
+                            <td>
+                                <span class="status-badge status-{{ project.status|lower|replace(' ', '-') }}">
+                                    {{ project.status }}
+                                </span>
+                            </td>
+                            <td>{{ "%.2f"|format(project.budget) }} €</td>
+                            <td>{{ "%.2f"|format(project.invoiced) }} €</td>
+                            <td>{{ "%.2f"|format(project.remaining_budget) }} €</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </main>
 </body>
 </html>
