@@ -1,6 +1,9 @@
 from datetime import datetime
+from io import BytesIO
 
-from flask import Flask, render_template, abort, request, redirect, url_for
+from flask import Flask, render_template, abort, request, redirect, url_for, send_file
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
 
 app = Flask(__name__)
 
@@ -159,6 +162,80 @@ def invoice_draft(project_id):
         total_amount=total_amount,
     )
 
+@app.route("/projects/<int:project_id>/invoice-draft/pdf")
+def invoice_draft_pdf(project_id):
+    project = next((p for p in PROJECTS if p["id"] == project_id), None)
+    if project is None:
+        abort(404)
 
+    approved_services = [
+        service for service in project["services"]
+        if service["status"] == "freigegeben"
+    ]
+
+    total_hours = sum(service["hours"] for service in approved_services)
+    total_amount = total_hours * project["hourly_rate"]
+
+    buffer = BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=A4)
+    width, height = A4
+
+    y = height - 50
+
+    pdf.setTitle(f"Rechnungsentwurf_{project['project_number']}")
+
+    pdf.setFont("Helvetica-Bold", 16)
+    pdf.drawString(50, y, "Rechnungsentwurf")
+    y -= 30
+
+    pdf.setFont("Helvetica", 11)
+    pdf.drawString(50, y, f"Projekt: {project['name']}")
+    y -= 20
+    pdf.drawString(50, y, f"Projektnummer: {project['project_number']}")
+    y -= 20
+    pdf.drawString(50, y, f"Kunde: {project['customer']}")
+    y -= 20
+    pdf.drawString(50, y, f"Stundensatz: {project['hourly_rate']:.2f} €")
+    y -= 30
+
+    pdf.setFont("Helvetica-Bold", 12)
+    pdf.drawString(50, y, "Freigegebene Leistungen")
+    y -= 25
+
+    pdf.setFont("Helvetica", 10)
+
+    if approved_services:
+        for service in approved_services:
+            line = (
+                f"{service['date']} | {service['description']} | "
+                f"{service['hours']:.2f} h | {service['status']}"
+            )
+            pdf.drawString(50, y, line)
+            y -= 18
+
+            if y < 80:
+                pdf.showPage()
+                y = height - 50
+                pdf.setFont("Helvetica", 10)
+
+        y -= 10
+        pdf.setFont("Helvetica-Bold", 11)
+        pdf.drawString(50, y, f"Gesamtstunden: {total_hours:.2f}")
+        y -= 20
+        pdf.drawString(50, y, f"Entwurfsbetrag: {total_amount:.2f} €")
+    else:
+        pdf.drawString(50, y, "Für dieses Projekt liegen aktuell keine freigegebenen Leistungen vor.")
+
+    pdf.save()
+    buffer.seek(0)
+
+    filename = f"rechnungsentwurf_{project['project_number']}.pdf"
+
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name=filename,
+        mimetype="application/pdf",
+    )
 if __name__ == "__main__":
     app.run(debug=True)

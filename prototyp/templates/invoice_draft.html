@@ -13,14 +13,19 @@
         </p>
 
         <section class="page-header">
-            <div>
-                <p class="eyebrow">Rechnungsentwurf</p>
-                <h1>{{ project.name }}</h1>
-                <p class="page-description">
-                    Zusammenstellung aller freigegebenen Leistungen als Grundlage für die abrechnungsbezogene Weiterverarbeitung.
-                </p>
-            </div>
-        </section>
+    <div>
+        <p class="eyebrow">Rechnungsentwurf</p>
+        <h1>{{ project.name }}</h1>
+        <p class="page-description">
+            Zusammenstellung aller freigegebenen Leistungen als Grundlage für die abrechnungsbezogene Weiterverarbeitung.
+        </p>
+    </div>
+    <div class="header-actions">
+        <a class="button-link" href="{{ url_for('invoice_draft_pdf', project_id=project.id) }}">
+            PDF herunterladen
+        </a>
+    </div>
+</section>
 
         <section class="card">
             <div class="card-header">
