@@ -13,6 +13,19 @@ body {
 
 .back-link {
     margin-bottom: 20px;
+    position: relative;
+    z-index: 10;
+}
+
+.back-link-anchor {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+    z-index: 10;
+    pointer-events: auto;
+    cursor: pointer;
+    font-weight: 600;
 }
 
 .page-header {
@@ -42,6 +55,8 @@ body {
 .header-actions {
     display: flex;
     align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
 h1,
@@ -268,4 +283,11 @@ button:hover {
 .status-freigegeben {
     background: #dcfce7;
     color: #15803d;
+}
+
+.role-form {
+    display: flex;
+    gap: 14px;
+    align-items: flex-end;
+    flex-wrap: wrap;
 }

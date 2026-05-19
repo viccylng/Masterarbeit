@@ -9,7 +9,7 @@
 <body>
     <main class="container">
         <p class="back-link">
-            <a href="{{ url_for('index') }}">← Zurück zur Übersicht</a>
+            <a href="{{ url_for('index', role=current_role) }}">← Zurück zur Übersicht</a>
         </p>
 
         <section class="page-header">
@@ -21,9 +21,16 @@
                 </p>
             </div>
             <div class="header-actions">
-                <a class="button-link" href="{{ url_for('invoice_draft', project_id=project.id) }}">
+                <a class="button-link" href="{{ url_for('invoice_draft', project_id=project.id, role=current_role) }}">
                     Rechnungsentwurf anzeigen
                 </a>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="card-header">
+                <h2>Aktive Rolle</h2>
+                <p>Aktuelle Systemsicht: {{ available_roles[current_role] }}</p>
             </div>
         </section>
 
@@ -79,7 +86,10 @@
                 <p>Erfassung und Statuspflege projektbezogener Leistungen.</p>
             </div>
 
+            {% if can_edit %}
             <form action="{{ url_for('add_service', project_id=project.id) }}" method="post" class="service-form">
+                <input type="hidden" name="role" value="{{ current_role }}">
+
                 <div class="form-row">
                     <label for="date">Datum</label>
                     <input type="date" id="date" name="date" required>
@@ -106,6 +116,9 @@
 
                 <button type="submit">Leistung hinzufügen</button>
             </form>
+            {% else %}
+            <p>Für die aktuell gewählte Rolle steht keine Bearbeitung der Leistungen zur Verfügung.</p>
+            {% endif %}
 
             <div class="table-wrapper">
                 <table>
@@ -124,7 +137,9 @@
                             <td>{{ service.description }}</td>
                             <td>{{ service.hours }}</td>
                             <td>
+                                {% if can_edit %}
                                 <form action="{{ url_for('update_service_status', project_id=project.id, service_index=loop.index0) }}" method="post" class="inline-form">
+                                    <input type="hidden" name="role" value="{{ current_role }}">
                                     <select name="status">
                                         <option value="erfasst" {% if service.status == "erfasst" %}selected{% endif %}>erfasst</option>
                                         <option value="geprüft" {% if service.status == "geprüft" %}selected{% endif %}>geprüft</option>
@@ -132,6 +147,11 @@
                                     </select>
                                     <button type="submit">Speichern</button>
                                 </form>
+                                {% else %}
+                                <span class="status-badge status-{{ service.status|lower|replace(' ', '-') }}">
+                                    {{ service.status }}
+                                </span>
+                                {% endif %}
                             </td>
                         </tr>
                         {% endfor %}

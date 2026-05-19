@@ -8,24 +8,30 @@
 </head>
 <body>
     <main class="container">
-        <p class="back-link">
-            <a href="{{ url_for('project_detail', project_id=project.id) }}">← Zurück zum Projekt</a>
-        </p>
-
         <section class="page-header">
-    <div>
-        <p class="eyebrow">Rechnungsentwurf</p>
-        <h1>{{ project.name }}</h1>
-        <p class="page-description">
-            Zusammenstellung aller freigegebenen Leistungen als Grundlage für die abrechnungsbezogene Weiterverarbeitung.
-        </p>
-    </div>
-    <div class="header-actions">
-        <a class="button-link" href="{{ url_for('invoice_draft_pdf', project_id=project.id) }}">
-            PDF herunterladen
-        </a>
-    </div>
-</section>
+            <div>
+                <p class="eyebrow">Rechnungsentwurf</p>
+                <h1>{{ project.name }}</h1>
+                <p class="page-description">
+                    Zusammenstellung aller freigegebenen Leistungen als Grundlage für die abrechnungsbezogene Weiterverarbeitung.
+                </p>
+            </div>
+            <div class="header-actions">
+                <a class="button-link secondary-button-link" href="{{ request.host_url.rstrip('/') }}/projects/{{ project.id }}?role={{ current_role }}">
+                    Zum Projekt
+                </a>
+                <a class="button-link" href="{{ url_for('invoice_draft_pdf', project_id=project.id, role=current_role) }}">
+                    PDF herunterladen
+                </a>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="card-header">
+                <h2>Aktive Rolle</h2>
+                <p>Aktuelle Systemsicht: {{ available_roles[current_role] }}</p>
+            </div>
+        </section>
 
         <section class="card">
             <div class="card-header">

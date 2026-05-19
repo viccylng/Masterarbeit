@@ -20,6 +20,27 @@
 
         <section class="card">
             <div class="card-header">
+                <h2>Aktive Rolle</h2>
+                <p>Die gewählte Rolle steuert, welche Projekte sichtbar sind und welche Bearbeitungsschritte möglich bleiben.</p>
+            </div>
+
+            <form action="{{ url_for('index') }}" method="get" class="role-form">
+                <div class="form-row">
+                    <label for="role">Rolle</label>
+                    <select id="role" name="role">
+                        {% for role_key, role_label in available_roles.items() %}
+                        <option value="{{ role_key }}" {% if current_role == role_key %}selected{% endif %}>
+                            {{ role_label }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit">Rolle wechseln</button>
+            </form>
+        </section>
+
+        <section class="card">
+            <div class="card-header">
                 <h2>Projekte</h2>
                 <p>Zentrale Sicht auf Projektstatus, Budget und abrechnungsbezogene Kennzahlen.</p>
             </div>
@@ -41,7 +62,7 @@
                         {% for project in projects %}
                         <tr>
                             <td>
-                                <a href="{{ url_for('project_detail', project_id=project.id) }}">
+                                <a href="{{ url_for('project_detail', project_id=project.id, role=current_role) }}">
                                     {{ project.project_number }}
                                 </a>
                             </td>
