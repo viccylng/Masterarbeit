@@ -21,8 +21,6 @@ class Project(db.Model):
     customer = db.Column(db.String(200), nullable=False)
     status = db.Column(db.String(50), nullable=False, default="In Bearbeitung")
     budget = db.Column(db.Float, nullable=False, default=0.0)
-    invoiced = db.Column(db.Float, nullable=False, default=0.0)
-    remaining_budget = db.Column(db.Float, nullable=False, default=0.0)
     project_manager = db.Column(db.String(100), nullable=False)
     hourly_rate = db.Column(db.Float, nullable=False, default=0.0)
 
@@ -41,6 +39,34 @@ class Project(db.Model):
         order_by="AuditEntry.id.desc()",
     )
 
+    # --- Berechnete Kennzahlen (Soll-Ist-Sicht auf Projektebene) ---
+    # Abgeleitete Groessen werden nicht gespeichert, sondern bei jeder Abfrage
+    # aus den zugrunde liegenden Leistungen berechnet. Damit koennen Budget,
+    # Verbrauch und Restbudget nicht auseinanderlaufen.
+
+    @property
+    def consumed(self):
+        """Verbrauch (Ist): gepruefte und freigegebene Leistungen, in Euro."""
+        relevant = [s for s in self.services if s.status in ("geprüft", "freigegeben")]
+        return sum(s.hours for s in relevant) * self.hourly_rate
+
+    @property
+    def invoiced(self):
+        """Verrechnet (fakturiert): nur freigegebene Leistungen, in Euro."""
+        relevant = [s for s in self.services if s.status == "freigegeben"]
+        return sum(s.hours for s in relevant) * self.hourly_rate
+
+    @property
+    def remaining_budget(self):
+        """Restbudget (Soll minus Ist): Budget abzueglich Verbrauch, in Euro."""
+        return self.budget - self.consumed
+
+    @property
+    def budget_consumption_percent(self):
+        """Budgetauslastung in Prozent. 0.0, wenn kein Budget hinterlegt ist."""
+        if self.budget == 0:
+            return 0.0
+        return self.consumed / self.budget * 100
 
 class Service(db.Model):
     """Projektbezogene Leistung mit dreistufigem Freigabe-Status.

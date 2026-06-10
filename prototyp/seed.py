@@ -19,13 +19,12 @@ SEED_PROJECTS = [
         "customer": "Kundenprojekt 1",
         "status": "In Bearbeitung",
         "budget": 50000.00,
-        "invoiced": 15000.00,
-        "remaining_budget": 35000.00,
         "project_manager": "Projektleitung A",
         "hourly_rate": 120.00,
         "services": [
-            {"date": "2026-05-01", "description": "Analyse", "hours": 8, "status": "freigegeben"},
-            {"date": "2026-05-03", "description": "Konzeption", "hours": 6, "status": "erfasst"},
+            {"date": "2026-05-01", "description": "Analyse", "hours": 80, "status": "freigegeben"},
+            {"date": "2026-05-03", "description": "Konzeption", "hours": 60, "status": "geprüft"},
+            {"date": "2026-05-08", "description": "Detailauslegung", "hours": 40, "status": "erfasst"},
         ],
         "audit_log": [
             {
@@ -41,12 +40,10 @@ SEED_PROJECTS = [
         "customer": "Kundenprojekt 2",
         "status": "Angebotsphase",
         "budget": 30000.00,
-        "invoiced": 0.00,
-        "remaining_budget": 30000.00,
         "project_manager": "Projektleitung B",
         "hourly_rate": 95.00,
         "services": [
-            {"date": "2026-05-02", "description": "Prüfung", "hours": 4, "status": "geprueft"},
+            {"date": "2026-05-02", "description": "Prüfung", "hours": 40, "status": "geprüft"},
         ],
         "audit_log": [
             {
@@ -72,8 +69,6 @@ def seed_database():
                 customer=project_data["customer"],
                 status=project_data["status"],
                 budget=project_data["budget"],
-                invoiced=project_data["invoiced"],
-                remaining_budget=project_data["remaining_budget"],
                 project_manager=project_data["project_manager"],
                 hourly_rate=project_data["hourly_rate"],
             )

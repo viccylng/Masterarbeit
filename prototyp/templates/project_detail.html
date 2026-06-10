@@ -82,6 +82,32 @@
 
         <section class="card">
             <div class="card-header">
+                <h2>Soll-Ist-Sicht</h2>
+                <p>Gegenüberstellung von Budget, Verbrauch und Restbudget auf Projektebene. Der Verbrauch umfasst geprüfte und freigegebene Leistungen.</p>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Budget (Soll)</span>
+                    <span class="info-value">{{ "%.2f"|format(project.budget) }} €</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Verbrauch (Ist)</span>
+                    <span class="info-value">{{ "%.2f"|format(project.consumed) }} €</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Restbudget</span>
+                    <span class="info-value">{{ "%.2f"|format(project.remaining_budget) }} €</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Budgetverbrauch in %</span>
+                    <span class="info-value">{{ "%.1f"|format(project.budget_consumption_percent) }} %</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="card-header">
                 <h2>Leistungen</h2>
                 <p>Erfassung und Statuspflege projektbezogener Leistungen. Neue Leistungen werden im Status „erfasst“ angelegt.</p>
             </div>

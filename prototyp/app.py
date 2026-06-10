@@ -19,15 +19,14 @@ AVAILABLE_ROLES = {
     "management": "Management",
 }
 
-# Freigabe-Workflow: erfasst -> geprueft -> freigegeben.
-SERVICE_STATUSES = ["erfasst", "geprueft", "freigegeben"]
+# Freigabe-Workflow: erfasst -> geprüft -> freigegeben.
+SERVICE_STATUSES = ["erfasst", "geprüft", "freigegeben"]
 
-# Rollenbasierte Rechte fuer die Statusuebergaenge.
-# Projektleitung darf pruefen, Controlling gibt final frei.
+# Rollenbasierte Rechte für die Statusübergänge.
+# Projektleitung darf prüfen, Controlling gibt final frei.
 STATUS_PERMISSIONS = {
-    "geprueft": {"project_manager_a", "project_manager_b"},
+    "geprüft": {"project_manager_a", "project_manager_b"},
     "freigegeben": {"controlling"},
-    # Zuruecksetzen auf 'erfasst' duerfen pruefende und freigebende Rollen.
     "erfasst": {"project_manager_a", "project_manager_b", "controlling"},
 }
 
