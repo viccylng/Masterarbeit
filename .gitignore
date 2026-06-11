@@ -15,3 +15,8 @@ prototyp/.venv/
 
 # macOS
 .DS_Store
+
+# Datenbank (wird per seed.py erzeugt)
+*.db
+*.sqlite
+*.sqlite3
