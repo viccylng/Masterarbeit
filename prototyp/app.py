@@ -4,13 +4,22 @@ from flask import Flask, render_template, abort, request, redirect, url_for, sen
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 
-from models import db, Project, Service, AuditEntry
+from models import db, Project, Service, AuditEntry, Order 
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///lean_erp.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
+
+def format_euro(value):
+    """Formatiert einen Betrag im deutschen Stil mit Tausenderpunkt und Dezimalkomma."""
+    # Punkt und Komma sind im deutschen Format vertauscht, daher der Umweg über X.
+    formatted = f"{value:,.2f}"
+    return formatted.replace(",", "X").replace(".", ",").replace("X", ".")
+
+
+app.jinja_env.filters["euro"] = format_euro
 
 AVAILABLE_ROLES = {
     "project_manager_a": "Projektleitung A",
@@ -245,7 +254,7 @@ def invoice_draft_pdf(project_id):
     y -= 20
     pdf.drawString(50, y, f"Kunde: {project.customer}")
     y -= 20
-    pdf.drawString(50, y, f"Stundensatz: {project.hourly_rate:.2f} EUR")
+    pdf.drawString(50, y, f"Stundensatz: {format_euro(project.hourly_rate)} EUR")
     y -= 30
 
     pdf.setFont("Helvetica-Bold", 12)
@@ -271,7 +280,7 @@ def invoice_draft_pdf(project_id):
         pdf.setFont("Helvetica-Bold", 11)
         pdf.drawString(50, y, f"Gesamtstunden: {total_hours:.2f}")
         y -= 20
-        pdf.drawString(50, y, f"Entwurfsbetrag: {total_amount:.2f} EUR")
+        pdf.drawString(50, y, f"Entwurfsbetrag: {format_euro(total_amount)} EUR")
     else:
         pdf.drawString(50, y, "Fuer dieses Projekt liegen aktuell keine freigegebenen Leistungen vor.")
 

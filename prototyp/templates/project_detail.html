@@ -61,21 +61,21 @@
                     <span class="info-label">Projektleitung</span>
                     <span class="info-value">{{ project.project_manager }}</span>
                 </div>
-                <div class="info-item">
+               <div class="info-item">
                     <span class="info-label">Budget</span>
-                    <span class="info-value">{{ "%.2f"|format(project.budget) }} €</span>
+                    <span class="info-value">{{ project.budget|euro }} €</span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">Verrechnet</span>
-                    <span class="info-value">{{ "%.2f"|format(project.invoiced) }} €</span>
+                    <span class="info-value">{{ project.invoiced|euro }} €</span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">Restbudget</span>
-                    <span class="info-value">{{ "%.2f"|format(project.remaining_budget) }} €</span>
+                    <span class="info-value">{{ project.remaining_budget|euro }} €</span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">Stundensatz</span>
-                    <span class="info-value">{{ "%.2f"|format(project.hourly_rate) }} €</span>
+                    <span class="info-value">{{ project.hourly_rate|euro }} €</span>
                 </div>
             </div>
         </section>
@@ -89,31 +89,31 @@
             <div class="info-grid">
                 <div class="info-item">
                     <span class="info-label">Budget</span>
-                    <span class="info-value">{{ "%.2f"|format(project.budget) }} €</span>
+                    <span class="info-value">{{ project.budget|euro }} €</span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">Verrechnet</span>
-                    <span class="info-value">{{ "%.2f"|format(project.invoiced) }} €</span>
+                    <span class="info-value">{{ project.invoiced|euro }} €</span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">Bezahlte Bestellungen</span>
-                    <span class="info-value">{{ "%.2f"|format(project.orders_paid) }} €</span>
+                    <span class="info-value">{{ project.orders_paid|euro }} €</span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">Restbudget</span>
-                    <span class="info-value">{{ "%.2f"|format(project.remaining_budget) }} €</span>
+                    <span class="info-value">{{ project.remaining_budget|euro }} €</span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">Offene Bestellungen</span>
-                    <span class="info-value">{{ "%.2f"|format(project.orders_open) }} €</span>
+                    <span class="info-value">{{ project.orders_open|euro }} €</span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">Verfügbares Projektbudget</span>
-                    <span class="info-value">{{ "%.2f"|format(project.available_project_budget) }} €</span>
+                    <span class="info-value">{{ project.available_project_budget|euro }} €</span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">Verbrauch (Kontrollgröße)</span>
-                    <span class="info-value">{{ "%.2f"|format(project.consumed) }} €</span>
+                    <span class="info-value">{{ project.consumed|euro }} €</span>
                 </div>
             </div>
         </section>
@@ -171,7 +171,7 @@
                             <td>{{ order.date }}</td>
                             <td>{{ order.description }}</td>
                             <td>{{ order.supplier }}</td>
-                            <td>{{ "%.2f"|format(order.amount) }} €</td>
+                            <td>{{ order.amount|euro }} €</td>
                             <td>
                                 <span class="status-badge status-{{ order.status|lower|replace(' ', '-') }}">
                                     {{ order.status }}
