@@ -1,12 +1,17 @@
 from io import BytesIO
 
-from flask import Flask, render_template, abort, request, redirect, url_for, send_file
+from flask import Flask, render_template, abort, request, redirect, url_for, send_file, flash
 from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import mm
+from reportlab.lib import colors
+from reportlab.platypus import Table, TableStyle
 from reportlab.pdfgen import canvas
+from datetime import datetime
 
 from models import db, Project, Service, AuditEntry, Order 
 
 app = Flask(__name__)
+app.secret_key = "lean-erp-prototyp-evaluation"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///lean_erp.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
@@ -20,6 +25,20 @@ def format_euro(value):
 
 
 app.jinja_env.filters["euro"] = format_euro
+
+def parse_positive_number(raw_value):
+    """Wandelt eine Formulareingabe in eine positive Zahl um.
+
+    Gibt die Zahl zurück, wenn die Eingabe gültig und größer als null ist,
+    sonst None.
+    """
+    try:
+        number = float(str(raw_value).replace(",", "."))
+    except (TypeError, ValueError):
+        return None
+    if number <= 0:
+        return None
+    return number
 
 AVAILABLE_ROLES = {
     "project_manager_a": "Projektleitung A",
@@ -127,11 +146,22 @@ def add_service(project_id):
     if not can_edit_project(current_role):
         abort(403)
 
+    description = request.form["description"].strip()
+    hours = parse_positive_number(request.form["hours"])
+
+    if not description:
+        flash("Bitte eine Beschreibung für die Leistung angeben.", "error")
+        return redirect(url_for("project_detail", project_id=project_id, role=current_role))
+
+    if hours is None:
+        flash("Bitte für die Stunden eine positive Zahl angeben.", "error")
+        return redirect(url_for("project_detail", project_id=project_id, role=current_role))
+
     # Neue Leistungen starten immer im Status 'erfasst'.
     new_service = Service(
         date=request.form["date"],
-        description=request.form["description"],
-        hours=float(request.form["hours"]),
+        description=description,
+        hours=hours,
         status="erfasst",
     )
     project.services.append(new_service)
@@ -143,6 +173,7 @@ def add_service(project_id):
     )
 
     db.session.commit()
+    flash("Leistung wurde erfasst.", "success")
     return redirect(url_for("project_detail", project_id=project_id, role=current_role))
 
 @app.route("/projects/<int:project_id>/add-order", methods=["POST"])
@@ -153,12 +184,28 @@ def add_order(project_id):
     if not can_add_order(current_role):
         abort(403)
 
+    description = request.form["description"].strip()
+    supplier = request.form["supplier"].strip()
+    amount = parse_positive_number(request.form["amount"])
+
+    if not description:
+        flash("Bitte eine Bezeichnung für die Bestellung angeben.", "error")
+        return redirect(url_for("project_detail", project_id=project_id, role=current_role))
+
+    if not supplier:
+        flash("Bitte einen Lieferanten angeben.", "error")
+        return redirect(url_for("project_detail", project_id=project_id, role=current_role))
+
+    if amount is None:
+        flash("Bitte für den Betrag eine positive Zahl angeben.", "error")
+        return redirect(url_for("project_detail", project_id=project_id, role=current_role))
+
     # Neue Bestellungen starten standardmaessig im Status 'offen'.
     new_order = Order(
         date=request.form["date"],
-        description=request.form["description"],
-        supplier=request.form["supplier"],
-        amount=float(request.form["amount"]),
+        description=description,
+        supplier=supplier,
+        amount=amount,
         status="offen",
     )
     project.orders.append(new_order)
@@ -170,6 +217,7 @@ def add_order(project_id):
     )
 
     db.session.commit()
+    flash("Bestellung wurde erfasst.", "success")
     return redirect(url_for("project_detail", project_id=project_id, role=current_role))
 
 
@@ -235,54 +283,89 @@ def invoice_draft_pdf(project_id):
     approved_services = _approved_services(project)
     total_hours = sum(s.hours for s in approved_services)
     total_amount = total_hours * project.hourly_rate
+    created_on = datetime.now().strftime("%d.%m.%Y")
 
     buffer = BytesIO()
     pdf = canvas.Canvas(buffer, pagesize=A4)
     width, height = A4
-    y = height - 50
+    left = 25 * mm
+    right = width - 25 * mm
 
     pdf.setTitle(f"Rechnungsentwurf_{project.project_number}")
 
-    pdf.setFont("Helvetica-Bold", 16)
-    pdf.drawString(50, y, "Rechnungsentwurf")
-    y -= 30
+    # --- Briefkopf (Platzhalter, frei aenderbar) ---
+    pdf.setFont("Helvetica-Bold", 13)
+    pdf.drawString(left, height - 30 * mm, "Musterfirma GmbH")
+    pdf.setFont("Helvetica", 9)
+    pdf.drawString(left, height - 35 * mm, "Musterstraße 1, 12345 Musterstadt")
+    pdf.drawString(left, height - 39 * mm, "kontakt@musterfirma.de")
 
-    pdf.setFont("Helvetica", 11)
-    pdf.drawString(50, y, f"Projekt: {project.name}")
-    y -= 20
-    pdf.drawString(50, y, f"Projektnummer: {project.project_number}")
-    y -= 20
-    pdf.drawString(50, y, f"Kunde: {project.customer}")
-    y -= 20
-    pdf.drawString(50, y, f"Stundensatz: {format_euro(project.hourly_rate)} EUR")
-    y -= 30
+    # --- Titel und Trennlinie ---
+    pdf.setFont("Helvetica-Bold", 18)
+    pdf.drawString(left, height - 52 * mm, "Rechnungsentwurf")
+    pdf.setFont("Helvetica", 9)
+    pdf.drawRightString(right, height - 52 * mm, f"Erstellt am {created_on}")
+    pdf.setLineWidth(0.8)
+    pdf.line(left, height - 55 * mm, right, height - 55 * mm)
 
-    pdf.setFont("Helvetica-Bold", 12)
-    pdf.drawString(50, y, "Freigegebene Leistungen")
-    y -= 25
-
+    # --- Projektangaben ---
+    y = height - 65 * mm
     pdf.setFont("Helvetica", 10)
+    angaben = [
+        ("Projekt", project.name),
+        ("Projektnummer", project.project_number),
+        ("Kunde", project.customer),
+        ("Stundensatz", f"{format_euro(project.hourly_rate)} EUR"),
+    ]
+    for label, value in angaben:
+        pdf.setFont("Helvetica-Bold", 10)
+        pdf.drawString(left, y, f"{label}:")
+        pdf.setFont("Helvetica", 10)
+        pdf.drawString(left + 35 * mm, y, str(value))
+        y -= 6 * mm
 
+    # --- Leistungstabelle ---
+    y -= 6 * mm
     if approved_services:
-        for service in approved_services:
-            line = (
-                f"{service.date} | {service.description} | "
-                f"{service.hours:.2f} h | {service.status}"
-            )
-            pdf.drawString(50, y, line)
-            y -= 18
-            if y < 80:
-                pdf.showPage()
-                y = height - 50
-                pdf.setFont("Helvetica", 10)
+        data = [["Datum", "Beschreibung", "Stunden", "Betrag"]]
+        for s in approved_services:
+            betrag = s.hours * project.hourly_rate
+            data.append([
+                s.date,
+                s.description,
+                f"{s.hours:.2f}",
+                f"{format_euro(betrag)} EUR",
+            ])
 
-        y -= 10
+        table = Table(data, colWidths=[28 * mm, 75 * mm, 25 * mm, 32 * mm])
+        table.setStyle(TableStyle([
+            ("FONT", (0, 0), (-1, 0), "Helvetica-Bold", 9),
+            ("FONT", (0, 1), (-1, -1), "Helvetica", 9),
+            ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#f0f2f5")),
+            ("TEXTCOLOR", (0, 0), (-1, 0), colors.HexColor("#1f2933")),
+            ("ALIGN", (2, 0), (3, -1), "RIGHT"),
+            ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd2d9")),
+            ("TOPPADDING", (0, 0), (-1, -1), 5),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+            ("LEFTPADDING", (0, 0), (-1, -1), 6),
+            ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+        ]))
+
+        table_width, table_height = table.wrapOn(pdf, width, height)
+        table.drawOn(pdf, left, y - table_height)
+        y = y - table_height - 10 * mm
+
+        # --- Summenbereich ---
+        pdf.setFont("Helvetica", 10)
+        pdf.drawRightString(right - 32 * mm, y, "Gesamtstunden:")
+        pdf.drawRightString(right, y, f"{total_hours:.2f}")
+        y -= 7 * mm
         pdf.setFont("Helvetica-Bold", 11)
-        pdf.drawString(50, y, f"Gesamtstunden: {total_hours:.2f}")
-        y -= 20
-        pdf.drawString(50, y, f"Entwurfsbetrag: {format_euro(total_amount)} EUR")
+        pdf.drawRightString(right - 32 * mm, y, "Entwurfsbetrag:")
+        pdf.drawRightString(right, y, f"{format_euro(total_amount)} EUR")
     else:
-        pdf.drawString(50, y, "Fuer dieses Projekt liegen aktuell keine freigegebenen Leistungen vor.")
+        pdf.setFont("Helvetica", 10)
+        pdf.drawString(left, y, "Für dieses Projekt liegen aktuell keine freigegebenen Leistungen vor.")
 
     pdf.save()
     buffer.seek(0)
@@ -294,7 +377,6 @@ def invoice_draft_pdf(project_id):
         download_name=filename,
         mimetype="application/pdf",
     )
-
 
 if __name__ == "__main__":
     app.run(debug=True, port=5001)
