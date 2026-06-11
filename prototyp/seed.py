@@ -8,7 +8,7 @@ Aufruf:  python seed.py
 """
 
 from app import app
-from models import db, Project, Service, AuditEntry
+from models import db, Project, Service, AuditEntry, Order
 
 # Beispielprojekte als reine Datenstruktur. Diese Werte werden in die
 # Datenbank geschrieben und bilden den Ausgangszustand der Evaluation.
@@ -25,6 +25,10 @@ SEED_PROJECTS = [
             {"date": "2026-05-01", "description": "Analyse", "hours": 80, "status": "freigegeben"},
             {"date": "2026-05-03", "description": "Konzeption", "hours": 60, "status": "geprüft"},
             {"date": "2026-05-08", "description": "Detailauslegung", "hours": 40, "status": "erfasst"},
+        ],
+        "orders": [
+            {"date": "2026-05-04", "description": "Messtechnik-Sensoren, 5 Stück", "supplier": "Lieferant Alpha", "amount": 3200.00, "status": "bezahlt"},
+            {"date": "2026-05-09", "description": "Prüflingsadapter, 2 Stück", "supplier": "Lieferant Beta", "amount": 1800.00, "status": "offen"},
         ],
         "audit_log": [
             {
@@ -44,6 +48,9 @@ SEED_PROJECTS = [
         "hourly_rate": 95.00,
         "services": [
             {"date": "2026-05-02", "description": "Prüfung", "hours": 40, "status": "geprüft"},
+        ],
+        "orders": [
+            {"date": "2026-05-06", "description": "Kabelsatz HV, 1 Satz", "supplier": "Lieferant Gamma", "amount": 2500.00, "status": "offen"},
         ],
         "audit_log": [
             {
@@ -75,6 +82,9 @@ def seed_database():
 
             for service_data in project_data["services"]:
                 project.services.append(Service(**service_data))
+
+            for order_data in project_data["orders"]:
+                project.orders.append(Order(**order_data))
 
             for audit_data in project_data["audit_log"]:
                 project.audit_log.append(AuditEntry(**audit_data))

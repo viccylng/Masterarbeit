@@ -38,6 +38,12 @@ class Project(db.Model):
         cascade="all, delete-orphan",
         order_by="AuditEntry.id.desc()",
     )
+    orders = db.relationship(
+        "Order",
+        backref="project",
+        cascade="all, delete-orphan",
+        order_by="Order.id",
+    )
 
     # --- Berechnete Kennzahlen (Soll-Ist-Sicht auf Projektebene) ---
     # Abgeleitete Groessen werden nicht gespeichert, sondern bei jeder Abfrage
@@ -55,11 +61,26 @@ class Project(db.Model):
         """Verrechnet (fakturiert): nur freigegebene Leistungen, in Euro."""
         relevant = [s for s in self.services if s.status == "freigegeben"]
         return sum(s.hours for s in relevant) * self.hourly_rate
+    
+    @property
+    def orders_paid(self):
+        """Summe der bereits bezahlten Bestellungen, in Euro."""
+        return sum(o.amount for o in self.orders if o.status == "bezahlt")
+
+    @property
+    def orders_open(self):
+        """Summe der noch offenen Bestellungen, in Euro."""
+        return sum(o.amount for o in self.orders if o.status == "offen")
 
     @property
     def remaining_budget(self):
-        """Restbudget (Soll minus Ist): Budget abzueglich Verbrauch, in Euro."""
-        return self.budget - self.consumed
+        """Restbudget: Budget abzueglich Verrechnetem und bezahlten Bestellungen, in Euro."""
+        return self.budget - self.invoiced - self.orders_paid
+
+    @property
+    def available_project_budget(self):
+        """Verfuegbares Projektbudget: Restbudget abzueglich offener Bestellungen, in Euro."""
+        return self.remaining_budget - self.orders_open
 
     @property
     def budget_consumption_percent(self):
@@ -83,6 +104,19 @@ class Service(db.Model):
     description = db.Column(db.String(300), nullable=False)
     hours = db.Column(db.Float, nullable=False, default=0.0)
     status = db.Column(db.String(20), nullable=False, default="erfasst")
+
+class Order(db.Model):
+    """Projektbezogene Beschaffung (eigene Bestellung)."""
+
+    __tablename__ = "orders"
+
+    id = db.Column(db.Integer, primary_key=True)
+    project_id = db.Column(db.Integer, db.ForeignKey("projects.id"), nullable=False)
+    date = db.Column(db.String(20), nullable=False)
+    description = db.Column(db.String(300), nullable=False)
+    supplier = db.Column(db.String(200), nullable=False)
+    amount = db.Column(db.Float, nullable=False, default=0.0)
+    status = db.Column(db.String(20), nullable=False, default="offen")
 
 
 class AuditEntry(db.Model):

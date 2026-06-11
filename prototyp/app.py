@@ -71,6 +71,9 @@ def can_edit_project(role):
     """Wer darf Leistungen erfassen?"""
     return role in {"project_manager_a", "project_manager_b", "controlling"}
 
+def can_add_order(role):
+    """Wer darf Bestellungen erfassen? Nur Controlling."""
+    return role == "controlling"
 
 def can_set_status(role, new_status):
     """Wer darf eine Leistung auf einen bestimmten Status setzen?"""
@@ -101,6 +104,7 @@ def project_detail(project_id):
         current_role=current_role,
         available_roles=AVAILABLE_ROLES,
         can_edit=can_edit_project(current_role),
+        can_add_order=can_add_order(current_role),
         statuses=SERVICE_STATUSES,
         status_permissions=STATUS_PERMISSIONS,
     )
@@ -127,6 +131,33 @@ def add_service(project_id):
         project,
         "Leistung hinzugefuegt",
         f"{new_service.description} mit {new_service.hours:.1f} Stunden wurde im Status 'erfasst' angelegt.",
+    )
+
+    db.session.commit()
+    return redirect(url_for("project_detail", project_id=project_id, role=current_role))
+
+@app.route("/projects/<int:project_id>/add-order", methods=["POST"])
+def add_order(project_id):
+    current_role = get_form_role()
+    project = get_project_or_404(project_id, current_role)
+
+    if not can_add_order(current_role):
+        abort(403)
+
+    # Neue Bestellungen starten standardmaessig im Status 'offen'.
+    new_order = Order(
+        date=request.form["date"],
+        description=request.form["description"],
+        supplier=request.form["supplier"],
+        amount=float(request.form["amount"]),
+        status="offen",
+    )
+    project.orders.append(new_order)
+
+    AuditEntry.create(
+        project,
+        "Bestellung erfasst",
+        f"Bestellung '{new_order.description}' ueber {new_order.amount:.2f} EUR ({new_order.supplier}) wurde im Status 'offen' angelegt.",
     )
 
     db.session.commit()
