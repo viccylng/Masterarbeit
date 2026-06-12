@@ -299,3 +299,25 @@ button:hover {
     align-items: flex-end;
     flex-wrap: wrap;
 }
+
+.flash {
+    padding: 18px 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-size: 17px;
+    font-weight: 700;
+    border: 2px solid transparent;
+    border-left-width: 6px;
+}
+
+.flash-success {
+    background: #bbf7d0;
+    color: #14532d;
+    border-color: #16a34a;
+}
+
+.flash-error {
+    background: #fecaca;
+    color: #7f1d1d;
+    border-color: #dc2626;
+}

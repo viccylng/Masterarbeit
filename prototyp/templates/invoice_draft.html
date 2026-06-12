@@ -54,7 +54,7 @@
                 </div>
                 <div class="info-item">
                     <span class="info-label">Stundensatz</span>
-                    <span class="info-value">{{ "%.2f"|format(project.hourly_rate) }} €</span>
+                    <span class="info-value">{{ project.hourly_rate|euro }} €</span>
                 </div>
             </div>
         </section>
@@ -100,7 +100,7 @@
                 </div>
                 <div class="summary-card">
                     <span class="summary-label">Entwurfsbetrag</span>
-                    <span class="summary-value">{{ "%.2f"|format(total_amount) }} €</span>
+                    <span class="summary-value">{{ total_amount|euro }} €</span>
                 </div>
             </div>
             {% else %}

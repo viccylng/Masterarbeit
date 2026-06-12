@@ -103,6 +103,10 @@ def can_add_order(role):
     """Wer darf Bestellungen erfassen? Nur Controlling."""
     return role == "controlling"
 
+def can_add_project(role):
+    """Wer darf neue Projekte anlegen? Nur Controlling."""
+    return role == "controlling"
+
 def can_set_status(role, new_status):
     """Wer darf eine Leistung auf einen bestimmten Status setzen?"""
     return role in STATUS_PERMISSIONS.get(new_status, set())
@@ -220,6 +224,58 @@ def add_order(project_id):
     flash("Bestellung wurde erfasst.", "success")
     return redirect(url_for("project_detail", project_id=project_id, role=current_role))
 
+@app.route("/projects/new", methods=["POST"])
+def add_project():
+    current_role = get_form_role()
+
+    if not can_add_project(current_role):
+        abort(403)
+
+    project_number = request.form["project_number"].strip()
+    name = request.form["name"].strip()
+    customer = request.form["customer"].strip()
+    project_manager = request.form["project_manager"].strip()
+    budget = parse_positive_number(request.form["budget"])
+    hourly_rate = parse_positive_number(request.form["hourly_rate"])
+
+    if not project_number or not name or not customer or not project_manager:
+        flash("Bitte alle Pflichtfelder des Projekts ausfüllen.", "error")
+        return redirect(url_for("index", role=current_role))
+
+    if budget is None:
+        flash("Bitte für das Budget eine positive Zahl angeben.", "error")
+        return redirect(url_for("index", role=current_role))
+
+    if hourly_rate is None:
+        flash("Bitte für den Stundensatz eine positive Zahl angeben.", "error")
+        return redirect(url_for("index", role=current_role))
+
+    # Projektnummer muss eindeutig sein.
+    existing = Project.query.filter_by(project_number=project_number).first()
+    if existing is not None:
+        flash(f"Die Projektnummer {project_number} ist bereits vergeben.", "error")
+        return redirect(url_for("index", role=current_role))
+
+    project = Project(
+        project_number=project_number,
+        name=name,
+        customer=customer,
+        status="In Bearbeitung",
+        budget=budget,
+        project_manager=project_manager,
+        hourly_rate=hourly_rate,
+    )
+    db.session.add(project)
+
+    AuditEntry.create(
+        project,
+        "Projekt angelegt",
+        f"Projekt '{name}' ({project_number}) wurde im System angelegt.",
+    )
+
+    db.session.commit()
+    flash("Projekt wurde angelegt.", "success")
+    return redirect(url_for("project_detail", project_id=project.id, role=current_role))
 
 @app.route("/projects/<int:project_id>/services/<int:service_id>/update-status", methods=["POST"])
 def update_service_status(project_id, service_id):

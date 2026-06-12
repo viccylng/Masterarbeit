@@ -8,6 +8,13 @@
 </head>
 <body>
     <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="flash flash-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
         <section class="page-header">
             <div>
                 <p class="eyebrow">Lean-ERP Prototyp</p>
@@ -38,6 +45,57 @@
                 <button type="submit">Rolle wechseln</button>
             </form>
         </section>
+
+
+        {% if current_role == "controlling" %}
+        <section class="card">
+            <div class="card-header">
+                <h2>Neues Projekt anlegen</h2>
+                <p>Anlage eines neuen Projekts als zentrale Bezugseinheit der Projektkontrolle.</p>
+            </div>
+
+            <form action="{{ url_for('add_project') }}" method="post" class="service-form">
+                <input type="hidden" name="role" value="{{ current_role }}">
+
+                <div class="form-row">
+                    <label for="project_number">Projektnummer</label>
+                    <input type="text" id="project_number" name="project_number" required>
+                </div>
+
+                <div class="form-row">
+                    <label for="name">Projektname</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-row">
+                    <label for="customer">Kunde</label>
+                    <input type="text" id="customer" name="customer" required>
+                </div>
+
+                <div class="form-row">
+                    <label for="project_manager">Projektleitung</label>
+                    <select id="project_manager" name="project_manager" required>
+                        <option value="Projektleitung A">Projektleitung A</option>
+                        <option value="Projektleitung B">Projektleitung B</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <label for="budget">Budget (€)</label>
+                    <input type="number" id="budget" name="budget" step="0.01" min="0.01" required
+                           title="Bitte ein positives Budget angeben.">
+                </div>
+
+                <div class="form-row">
+                    <label for="hourly_rate">Stundensatz (€)</label>
+                    <input type="number" id="hourly_rate" name="hourly_rate" step="0.01" min="0.01" required
+                           title="Bitte einen positiven Stundensatz angeben.">
+                </div>
+
+                <button type="submit">Projekt anlegen</button>
+            </form>
+        </section>
+        {% endif %}
 
         <section class="card">
             <div class="card-header">
