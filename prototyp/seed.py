@@ -60,6 +60,32 @@ SEED_PROJECTS = [
             }
         ],
     },
+    {
+        "project_number": "P-003",
+        "name": "Projekt C",
+        "customer": "Kundenprojekt 3",
+        "status": "In Bearbeitung",
+        "budget": 40000.00,
+        "project_manager": "Projektleitung A",
+        "hourly_rate": 110.00,
+        "services": [
+            {"date": "2026-05-05", "description": "Systemarchitektur", "hours": 70, "status": "freigegeben"},
+            {"date": "2026-05-07", "description": "Elektromagnetische Auslegung", "hours": 55, "status": "geprüft"},
+            {"date": "2026-05-12", "description": "Mechanik-Konstruktion", "hours": 45, "status": "geprüft"},
+            {"date": "2026-05-14", "description": "Testvorbereitung", "hours": 30, "status": "erfasst"},
+        ],
+        "orders": [
+            {"date": "2026-05-08", "description": "Leistungselektronik-Module, 3 Stück", "supplier": "Lieferant Delta", "amount": 4200.00, "status": "bezahlt"},
+            {"date": "2026-05-13", "description": "Wicklungsmaterial, Sonderposten", "supplier": "Lieferant Epsilon", "amount": 2600.00, "status": "offen"},
+        ],
+        "audit_log": [
+            {
+                "timestamp": "2026-05-15 10:10",
+                "action": "Projekt angelegt",
+                "details": "Projekt C wurde als Beispielprojekt im Prototyp angelegt.",
+            }
+        ],
+    },
 ]
 
 
