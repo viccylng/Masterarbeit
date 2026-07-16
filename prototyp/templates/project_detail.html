@@ -84,7 +84,21 @@
                     <span class="info-label">Stundensatz</span>
                     <span class="info-value">{{ project.hourly_rate|euro }} €</span>
                 </div>
+                <div class="info-item">
+                    <span class="info-label">Bestellnummer des Kunden</span>
+                    <span class="info-value">{{ project.customer_order_number or "–" }}</span>
+                </div>
             </div>
+
+            {% if current_role == "controlling" %}
+            <form action="{{ url_for('update_order_number', project_id=project.id) }}" method="post" class="order-number-form">
+                <input type="hidden" name="role" value="{{ current_role }}">
+                <label for="customer_order_number">Bestellnummer des Kunden eintragen oder ändern:</label>
+                <input type="text" id="customer_order_number" name="customer_order_number"
+                       value="{{ project.customer_order_number or '' }}" placeholder="z. B. 4500012345">
+                <button type="submit" class="secondary-button">Speichern</button>
+            </form>
+            {% endif %}
         </section>
 
         <section class="card">

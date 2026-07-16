@@ -321,3 +321,26 @@ button:hover {
     color: #7f1d1d;
     border-color: #dc2626;
 }
+
+.order-number-form {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+}
+
+.order-number-form label {
+    font-weight: 600;
+    color: #1f2933;
+}
+
+.order-number-form input {
+    flex: 1;
+    min-width: 200px;
+    max-width: 320px;
+    padding: 10px 12px;
+    border: 1px solid #cbd2d9;
+    border-radius: 8px;
+    font-size: 15px;
+}

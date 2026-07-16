@@ -13,7 +13,7 @@
                 <p class="eyebrow">Rechnungsentwurf</p>
                 <h1>{{ project.name }}</h1>
                 <p class="page-description">
-                    Zusammenstellung aller freigegebenen Leistungen als Grundlage für die abrechnungsbezogene Weiterverarbeitung.
+                    Zusammenstellung aller freigegebenen Leistungen als Grundlage für die abrechnungsbezogene Weiterverarbeitung. Keine Rechnung – Umsatzsteuer und Gesamtbetrag werden bei der Rechnungsstellung ergänzt.
                 </p>
             </div>
             <div class="header-actions">
@@ -56,6 +56,14 @@
                     <span class="info-label">Stundensatz</span>
                     <span class="info-value">{{ project.hourly_rate|euro }} €</span>
                 </div>
+                <div class="info-item">
+                    <span class="info-label">Ihre Bestellnummer</span>
+                    <span class="info-value">{{ project.customer_order_number or "–" }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Leistungszeitraum</span>
+                    <span class="info-value">{{ service_period or "–" }}</span>
+                </div>
             </div>
         </section>
 
@@ -70,23 +78,25 @@
                 <table>
                     <thead>
                         <tr>
+                            <th>Pos.</th>
                             <th>Datum</th>
-                            <th>Beschreibung</th>
-                            <th>Stunden</th>
-                            <th>Status</th>
+                            <th>Bezeichnung</th>
+                            <th>Menge</th>
+                            <th>Einheit</th>
+                            <th>Einzel €</th>
+                            <th>Gesamt €</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for service in approved_services %}
                         <tr>
+                            <td>{{ loop.index }}</td>
                             <td>{{ service.date }}</td>
                             <td>{{ service.description }}</td>
-                            <td>{{ service.hours }}</td>
-                            <td>
-                                <span class="status-badge status-{{ service.status|lower|replace(' ', '-') }}">
-                                    {{ service.status }}
-                                </span>
-                            </td>
+                            <td>{{ "%.2f"|format(service.hours) }}</td>
+                            <td>h</td>
+                            <td>{{ project.hourly_rate|euro }} €</td>
+                            <td>{{ (service.hours * project.hourly_rate)|euro }} €</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -99,7 +109,7 @@
                     <span class="summary-value">{{ "%.2f"|format(total_hours) }}</span>
                 </div>
                 <div class="summary-card">
-                    <span class="summary-label">Entwurfsbetrag</span>
+                    <span class="summary-label">Entwurfsbetrag (netto)</span>
                     <span class="summary-value">{{ total_amount|euro }} €</span>
                 </div>
             </div>

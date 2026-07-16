@@ -17,6 +17,13 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
 
+def format_date_german(value):
+    """Wandelt ein ISO-Datum (2026-05-01) in deutsche Schreibweise (01.05.2026)."""
+    try:
+        return datetime.strptime(value, "%Y-%m-%d").strftime("%d.%m.%Y")
+    except (ValueError, TypeError):
+        return value
+
 def format_euro(value):
     """Formatiert einen Betrag im deutschen Stil mit Tausenderpunkt und Dezimalkomma."""
     # Punkt und Komma sind im deutschen Format vertauscht, daher der Umweg über X.
@@ -204,7 +211,7 @@ def add_order(project_id):
         flash("Bitte für den Betrag eine positive Zahl angeben.", "error")
         return redirect(url_for("project_detail", project_id=project_id, role=current_role))
 
-    # Neue Bestellungen starten standardmaessig im Status 'offen'.
+    # Neue Bestellungen starten standardmässig im Status 'offen'.
     new_order = Order(
         date=request.form["date"],
         description=description,
@@ -217,7 +224,7 @@ def add_order(project_id):
     AuditEntry.create(
         project,
         "Bestellung erfasst",
-        f"Bestellung '{new_order.description}' ueber {new_order.amount:.2f} EUR ({new_order.supplier}) wurde im Status 'offen' angelegt.",
+        f"Bestellung '{new_order.description}' über {new_order.amount:.2f} EUR ({new_order.supplier}) wurde im Status 'offen' angelegt.",
     )
 
     db.session.commit()
@@ -237,6 +244,7 @@ def add_project():
     project_manager = request.form["project_manager"].strip()
     budget = parse_positive_number(request.form["budget"])
     hourly_rate = parse_positive_number(request.form["hourly_rate"])
+    customer_order_number = request.form.get("customer_order_number", "").strip() or None
 
     if not project_number or not name or not customer or not project_manager:
         flash("Bitte alle Pflichtfelder des Projekts ausfüllen.", "error")
@@ -264,6 +272,7 @@ def add_project():
         budget=budget,
         project_manager=project_manager,
         hourly_rate=hourly_rate,
+        customer_order_number=customer_order_number,
     )
     db.session.add(project)
 
@@ -276,6 +285,35 @@ def add_project():
     db.session.commit()
     flash("Projekt wurde angelegt.", "success")
     return redirect(url_for("project_detail", project_id=project.id, role=current_role))
+
+@app.route("/projects/<int:project_id>/update-order-number", methods=["POST"])
+def update_order_number(project_id):
+    current_role = get_form_role()
+    project = get_project_or_404(project_id, current_role)
+
+    # Nur das Controlling pflegt die Bestellnummer des Kunden.
+    if current_role != "controlling":
+        abort(403)
+
+    new_number = request.form.get("customer_order_number", "").strip()
+    old_number = project.customer_order_number
+
+    if not new_number and not old_number:
+        return redirect(url_for("project_detail", project_id=project_id, role=current_role))
+
+    project.customer_order_number = new_number or None
+
+    if new_number and not old_number:
+        details = f"Bestellnummer des Kunden '{new_number}' wurde ergänzt."
+    elif new_number:
+        details = f"Bestellnummer des Kunden von '{old_number}' auf '{new_number}' geändert."
+    else:
+        details = f"Bestellnummer des Kunden '{old_number}' wurde entfernt."
+
+    AuditEntry.create(project, "Bestellnummer aktualisiert", details)
+    db.session.commit()
+    flash("Bestellnummer des Kunden aktualisiert.", "success")
+    return redirect(url_for("project_detail", project_id=project_id, role=current_role))
 
 @app.route("/projects/<int:project_id>/services/<int:service_id>/update-status", methods=["POST"])
 def update_service_status(project_id, service_id):
@@ -319,6 +357,12 @@ def invoice_draft(project_id):
     approved_services = _approved_services(project)
     total_hours = sum(s.hours for s in approved_services)
     total_amount = total_hours * project.hourly_rate
+    service_dates = sorted(s.date for s in approved_services)
+    service_period = None
+    if len(service_dates) == 1:
+        service_period = format_date_german(service_dates[0])
+    elif service_dates:
+        service_period = f"{format_date_german(service_dates[0])} – {format_date_german(service_dates[-1])}"
 
     return render_template(
         "invoice_draft.html",
@@ -326,6 +370,7 @@ def invoice_draft(project_id):
         approved_services=approved_services,
         total_hours=total_hours,
         total_amount=total_amount,
+        service_period=service_period,
         current_role=current_role,
         available_roles=AVAILABLE_ROLES,
     )
@@ -339,6 +384,12 @@ def invoice_draft_pdf(project_id):
     approved_services = _approved_services(project)
     total_hours = sum(s.hours for s in approved_services)
     total_amount = total_hours * project.hourly_rate
+    service_dates = sorted(s.date for s in approved_services)
+    service_period = None
+    if len(service_dates) == 1:
+        service_period = format_date_german(service_dates[0])
+    elif service_dates:
+        service_period = f"{format_date_german(service_dates[0])} – {format_date_german(service_dates[-1])}"
     created_on = datetime.now().strftime("%d.%m.%Y")
 
     buffer = BytesIO()
@@ -359,19 +410,23 @@ def invoice_draft_pdf(project_id):
     # --- Titel und Trennlinie ---
     pdf.setFont("Helvetica-Bold", 18)
     pdf.drawString(left, height - 52 * mm, "Rechnungsentwurf")
+    pdf.setFont("Helvetica-Oblique", 10)
+    pdf.drawString(left, height - 58 * mm, "Keine Rechnung – Zuarbeit für die Rechnungsstellung")
     pdf.setFont("Helvetica", 9)
     pdf.drawRightString(right, height - 52 * mm, f"Erstellt am {created_on}")
     pdf.setLineWidth(0.8)
-    pdf.line(left, height - 55 * mm, right, height - 55 * mm)
+    pdf.line(left, height - 61 * mm, right, height - 61 * mm)
 
     # --- Projektangaben ---
-    y = height - 65 * mm
+    y = height - 70 * mm
     pdf.setFont("Helvetica", 10)
     angaben = [
         ("Projekt", project.name),
         ("Projektnummer", project.project_number),
         ("Kunde", project.customer),
         ("Stundensatz", f"{format_euro(project.hourly_rate)} EUR"),
+        ("Ihre Bestellnummer", project.customer_order_number or "–"),
+        ("Leistungszeitraum", service_period or "–"),
     ]
     for label, value in angaben:
         pdf.setFont("Helvetica-Bold", 10)
@@ -383,23 +438,26 @@ def invoice_draft_pdf(project_id):
     # --- Leistungstabelle ---
     y -= 6 * mm
     if approved_services:
-        data = [["Datum", "Beschreibung", "Stunden", "Betrag"]]
-        for s in approved_services:
+        data = [["Pos.", "Datum", "Bezeichnung", "Menge", "Einheit", "Einzel EUR", "Gesamt EUR"]]
+        for pos, s in enumerate(approved_services, start=1):
             betrag = s.hours * project.hourly_rate
             data.append([
-                s.date,
+                str(pos),
+                format_date_german(s.date),
                 s.description,
                 f"{s.hours:.2f}",
-                f"{format_euro(betrag)} EUR",
+                "h",
+                format_euro(project.hourly_rate),
+                format_euro(betrag),
             ])
 
-        table = Table(data, colWidths=[28 * mm, 75 * mm, 25 * mm, 32 * mm])
+        table = Table(data, colWidths=[10 * mm, 22 * mm, 52 * mm, 16 * mm, 14 * mm, 22 * mm, 24 * mm])
         table.setStyle(TableStyle([
             ("FONT", (0, 0), (-1, 0), "Helvetica-Bold", 9),
             ("FONT", (0, 1), (-1, -1), "Helvetica", 9),
             ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#f0f2f5")),
             ("TEXTCOLOR", (0, 0), (-1, 0), colors.HexColor("#1f2933")),
-            ("ALIGN", (2, 0), (3, -1), "RIGHT"),
+            ("ALIGN", (3, 0), (6, -1), "RIGHT"),
             ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd2d9")),
             ("TOPPADDING", (0, 0), (-1, -1), 5),
             ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
@@ -417,8 +475,11 @@ def invoice_draft_pdf(project_id):
         pdf.drawRightString(right, y, f"{total_hours:.2f}")
         y -= 7 * mm
         pdf.setFont("Helvetica-Bold", 11)
-        pdf.drawRightString(right - 32 * mm, y, "Entwurfsbetrag:")
+        pdf.drawRightString(right - 32 * mm, y, "Entwurfsbetrag (netto):")
         pdf.drawRightString(right, y, f"{format_euro(total_amount)} EUR")
+        y -= 7 * mm
+        pdf.setFont("Helvetica", 9)
+        pdf.drawRightString(right, y, "Umsatzsteuer und Gesamtbetrag werden bei der Rechnungsstellung ergänzt.")
     else:
         pdf.setFont("Helvetica", 10)
         pdf.drawString(left, y, "Für dieses Projekt liegen aktuell keine freigegebenen Leistungen vor.")

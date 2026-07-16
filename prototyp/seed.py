@@ -1,7 +1,7 @@
-"""Initialisierungsskript fuer die Datenbank.
+"""Initialisierungsskript für die Datenbank.
 
 Legt die Tabellen an und spielt die Beispielprojekte ein. Bei jedem Aufruf
-wird der Datenbestand zurueckgesetzt, sodass fuer die Evaluation ein
+wird der Datenbestand zurueckgesetzt, sodass für die Evaluation ein
 einheitlicher und reproduzierbarer Ausgangszustand vorliegt.
 
 Aufruf:  python seed.py
@@ -21,6 +21,7 @@ SEED_PROJECTS = [
         "budget": 50000.00,
         "project_manager": "Projektleitung A",
         "hourly_rate": 120.00,
+        "customer_order_number": "4500018231",
         "services": [
             {"date": "2026-05-01", "description": "Analyse", "hours": 80, "status": "freigegeben"},
             {"date": "2026-05-03", "description": "Konzeption", "hours": 60, "status": "geprüft"},
@@ -68,6 +69,7 @@ SEED_PROJECTS = [
         "budget": 40000.00,
         "project_manager": "Projektleitung A",
         "hourly_rate": 110.00,
+        "customer_order_number": "4500019476",
         "services": [
             {"date": "2026-05-05", "description": "Systemarchitektur", "hours": 70, "status": "freigegeben"},
             {"date": "2026-05-07", "description": "Elektromagnetische Auslegung", "hours": 55, "status": "geprüft"},
@@ -104,6 +106,7 @@ def seed_database():
                 budget=project_data["budget"],
                 project_manager=project_data["project_manager"],
                 hourly_rate=project_data["hourly_rate"],
+                customer_order_number=project_data.get("customer_order_number"),
             )
 
             for service_data in project_data["services"]:

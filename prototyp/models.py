@@ -5,12 +5,11 @@ from flask_sqlalchemy import SQLAlchemy
 # Zentrale Datenbank-Instanz. Wird in app.py mit der Flask-App verbunden.
 db = SQLAlchemy()
 
-
 class Project(db.Model):
     """Zentrale Bezugseinheit der Projektkontrolle.
 
-    Entspricht im Domaenenmodell dem Objekt 'Projekt', an das Leistungen,
-    Audit-Eintraege und die kaufmaennischen Kennzahlen gebunden sind.
+    Entspricht im Domänenmodell dem Objekt 'Projekt', an das Leistungen,
+    Audit-Einträge und die kaufmännischen Kennzahlen gebunden sind.
     """
 
     __tablename__ = "projects"
@@ -23,9 +22,12 @@ class Project(db.Model):
     budget = db.Column(db.Float, nullable=False, default=0.0)
     project_manager = db.Column(db.String(100), nullable=False)
     hourly_rate = db.Column(db.Float, nullable=False, default=0.0)
+    # Bestellnummer des Kunden (optional). Wird bei der Anlage oder nachträglich
+    # durch das Controlling gepflegt und im Rechnungsentwurf ausgewiesen.
+    customer_order_number = db.Column(db.String(100), nullable=True)
 
-    # 1:n - ein Projekt hat mehrere Leistungen und Audit-Eintraege.
-    # cascade sorgt dafuer, dass abhaengige Objekte mitgeloescht werden.
+    # 1:n - ein Projekt hat mehrere Leistungen und Audit-Einträge.
+    # cascade sorgt dafür, dass abhängige Objekte mitgelöscht werden.
     services = db.relationship(
         "Service",
         backref="project",
