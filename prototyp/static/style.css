@@ -279,13 +279,13 @@ button:hover {
 }
 
 .status-erfasst {
-    background: #fef3c7;
-    color: #b45309;
+    background: #fce7f3;
+    color: #be185d;
 }
 
 .status-geprüft {
-    background: #ede9fe;
-    color: #6d28d9;
+    background: #ffedd5;
+    color: #c2410c;
 }
 
 .status-freigegeben {
@@ -343,4 +343,15 @@ button:hover {
     border: 1px solid #cbd2d9;
     border-radius: 8px;
     font-size: 15px;
+}
+
+.info-hint {
+    background: #eaf1fb;
+    border-left: 4px solid #2c5cc5;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 10px 0 4px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #1e3a8a;
 }

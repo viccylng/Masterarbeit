@@ -179,7 +179,7 @@ def add_service(project_id):
 
     AuditEntry.create(
         project,
-        "Leistung hinzugefuegt",
+        "Leistung hinzugefügt",
         f"{new_service.description} mit {new_service.hours:.1f} Stunden wurde im Status 'erfasst' angelegt.",
     )
 
@@ -328,7 +328,7 @@ def update_service_status(project_id, service_id):
     if new_status not in SERVICE_STATUSES:
         abort(400)
 
-    # Rollenbasierte Pruefung des Statusuebergangs.
+    # Rollenbasierte Prüfung des Statusübergangs.
     if not can_set_status(current_role, new_status):
         abort(403)
 
@@ -337,7 +337,7 @@ def update_service_status(project_id, service_id):
 
     AuditEntry.create(
         project,
-        "Status geaendert",
+        "Status geändert",
         f"Die Leistung '{service.description}' wurde von '{old_status}' auf '{new_status}' gesetzt.",
     )
 
@@ -400,7 +400,7 @@ def invoice_draft_pdf(project_id):
 
     pdf.setTitle(f"Rechnungsentwurf_{project.project_number}")
 
-    # --- Briefkopf (Platzhalter, frei aenderbar) ---
+    # --- Briefkopf (Platzhalter, frei änderbar) ---
     pdf.setFont("Helvetica-Bold", 13)
     pdf.drawString(left, height - 30 * mm, "Musterfirma GmbH")
     pdf.setFont("Helvetica", 9)
