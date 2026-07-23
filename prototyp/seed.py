@@ -43,7 +43,7 @@ SEED_PROJECTS = [
         "project_number": "P-002",
         "name": "Projekt B",
         "customer": "Kundenprojekt 2",
-        "status": "Angebotsphase",
+        "status": "Angebot",
         "budget": 30000.00,
         "project_manager": "Projektleitung B",
         "hourly_rate": 95.00,

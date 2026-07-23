@@ -21,11 +21,27 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    position: relative;
-    z-index: 10;
-    pointer-events: auto;
-    cursor: pointer;
+    padding: 8px 14px;
+    border: 1px solid #cbd2d9;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #1e3a8a;
+    text-decoration: none;
     font-weight: 600;
+    cursor: pointer;
+}
+
+.back-link-anchor:hover {
+    background: #eaf1fb;
+    border-color: #2c5cc5;
+    text-decoration: none;
+}
+
+.back-arrow {
+    display: inline-block;
+    font-size: 18px;
+    line-height: 1;
+    transform: translateY(-1px);
 }
 
 .page-header {
@@ -207,6 +223,18 @@ button:hover {
     text-decoration: none;
 }
 
+.secondary-button-link {
+    background: #ffffff;
+    color: #1e3a8a;
+    border: 1px solid #cbd2d9;
+}
+
+.secondary-button-link:hover {
+    background: #eaf1fb;
+    border-color: #2c5cc5;
+    opacity: 1;
+}
+
 .service-form {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -273,9 +301,24 @@ button:hover {
     color: #1d4ed8;
 }
 
-.status-angebotsphase {
+.status-angebot {
     background: #fef3c7;
     color: #b45309;
+}
+
+.status-beauftragt {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.status-abgerechnet {
+    background: #e0e7ff;
+    color: #4338ca;
+}
+
+.status-gestorben {
+    background: #f3e8ff;
+    color: #7e22ce;
 }
 
 .status-erfasst {
@@ -335,7 +378,8 @@ button:hover {
     color: #1f2933;
 }
 
-.order-number-form input {
+.order-number-form input,
+.order-number-form select {
     flex: 1;
     min-width: 200px;
     max-width: 320px;
@@ -343,15 +387,41 @@ button:hover {
     border: 1px solid #cbd2d9;
     border-radius: 8px;
     font-size: 15px;
+    background: #ffffff;
+    color: #1f2933;
 }
 
 .info-hint {
     background: #eaf1fb;
-    border-left: 4px solid #2c5cc5;
+    border-left: 4px solid #17419b;
     border-radius: 8px;
-    padding: 10px 14px;
+    padding: 12px 16px;
     margin: 10px 0 4px;
     font-size: 14px;
     line-height: 1.5;
-    color: #1e3a8a;
+    color: #17419b;
+}
+
+.info-hint-intro {
+    margin: 0 0 8px;
+    font-weight: 600;
+}
+
+.info-hint-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 4px;
+}
+
+.info-hint-list li {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 10px;
+    align-items: baseline;
+}
+
+.info-hint-term {
+    font-weight: 700;
 }

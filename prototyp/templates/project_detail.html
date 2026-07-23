@@ -9,7 +9,7 @@
 <body>
     <main class="container">
         <p class="back-link">
-            <a href="{{ url_for('index', role=current_role) }}">← Zurück zur Übersicht</a>
+            <a class="back-link-anchor" href="{{ url_for('index', role=current_role) }}"><span class="back-arrow">←</span> Zurück zur Übersicht</a>
         </p>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -89,6 +89,32 @@
                     <span class="info-value">{{ project.customer_order_number or "–" }}</span>
                 </div>
             </div>
+
+<div class="info-hint">
+                <p class="info-hint-intro">Der Projektstatus bildet den kaufmännischen Lebenszyklus ab.</p>
+                <ul class="info-hint-list">
+                    <li><span class="info-hint-term">Angebot</span><span>angeboten, noch nicht beauftragt</span></li>
+                    <li><span class="info-hint-term">Beauftragt</span><span>Bestellung des Kunden liegt vor</span></li>
+                    <li><span class="info-hint-term">In Bearbeitung</span><span>Projekt läuft</span></li>
+                    <li><span class="info-hint-term">Abgerechnet</span><span>vollständig fakturiert</span></li>
+                    <li><span class="info-hint-term">Gestorben</span><span>nicht zustande gekommen</span></li>
+                </ul>
+            </div>
+
+            {% if current_role == "controlling" %}
+            <form action="{{ url_for('update_project_status', project_id=project.id) }}" method="post" class="order-number-form">
+                <input type="hidden" name="role" value="{{ current_role }}">
+                <label for="project_status">Projektstatus ändern:</label>
+                <select id="project_status" name="status">
+                    {% for status_option in project_statuses %}
+                    <option value="{{ status_option }}" {% if status_option == project.status %}selected{% endif %}>
+                        {{ status_option }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="secondary-button">Status setzen</button>
+            </form>
+            {% endif %}
 
             {% if current_role == "controlling" %}
             <form action="{{ url_for('update_order_number', project_id=project.id) }}" method="post" class="order-number-form">

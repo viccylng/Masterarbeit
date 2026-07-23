@@ -57,6 +57,9 @@ AVAILABLE_ROLES = {
 # Freigabe-Workflow: erfasst -> geprüft -> freigegeben.
 SERVICE_STATUSES = ["erfasst", "geprüft", "freigegeben"]
 
+# Projektstatus
+PROJECT_STATUSES = ["Angebot", "Beauftragt", "In Bearbeitung", "Abgerechnet", "Gestorben"]
+
 # Rollenbasierte Rechte für die Statusübergänge.
 # Projektleitung darf prüfen, Controlling gibt final frei.
 STATUS_PERMISSIONS = {
@@ -146,6 +149,7 @@ def project_detail(project_id):
         can_add_order=can_add_order(current_role),
         statuses=SERVICE_STATUSES,
         status_permissions=STATUS_PERMISSIONS,
+        project_statuses=PROJECT_STATUSES,
     )
 
 
@@ -313,6 +317,35 @@ def update_order_number(project_id):
     AuditEntry.create(project, "Bestellnummer aktualisiert", details)
     db.session.commit()
     flash("Bestellnummer des Kunden aktualisiert.", "success")
+    return redirect(url_for("project_detail", project_id=project_id, role=current_role))
+
+@app.route("/projects/<int:project_id>/update-status", methods=["POST"])
+def update_project_status(project_id):
+    current_role = get_form_role()
+    project = get_project_or_404(project_id, current_role)
+
+    # Der kaufmännische Projektstatus wird vom Controlling gepflegt.
+    if current_role != "controlling":
+        abort(403)
+
+    new_status = request.form.get("status", "")
+    if new_status not in PROJECT_STATUSES:
+        abort(400)
+
+    old_status = project.status
+    if new_status == old_status:
+        return redirect(url_for("project_detail", project_id=project_id, role=current_role))
+
+    project.status = new_status
+
+    AuditEntry.create(
+        project,
+        "Projektstatus geändert",
+        f"Der Projektstatus wurde von '{old_status}' auf '{new_status}' gesetzt.",
+    )
+
+    db.session.commit()
+    flash("Projektstatus wurde aktualisiert.", "success")
     return redirect(url_for("project_detail", project_id=project_id, role=current_role))
 
 @app.route("/projects/<int:project_id>/services/<int:service_id>/update-status", methods=["POST"])
