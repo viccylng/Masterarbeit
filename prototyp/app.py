@@ -68,6 +68,14 @@ STATUS_PERMISSIONS = {
     "erfasst": {"project_manager_a", "project_manager_b", "controlling"},
 }
 
+# Erlaubte Statusübergänge. Die Kette wird schrittweise durchlaufen,
+# ein Überspringen von 'geprüft' ist nicht möglich. Ein Schritt zurück
+# bleibt zulässig, damit Fehleingaben korrigiert werden koennen.
+ALLOWED_TRANSITIONS = {
+    "erfasst": {"geprüft"},
+    "geprüft": {"erfasst", "freigegeben"},
+    "freigegeben": {"geprüft"},
+}
 
 def get_current_role():
     role = request.args.get("role", "controlling")
@@ -121,6 +129,9 @@ def can_set_status(role, new_status):
     """Wer darf eine Leistung auf einen bestimmten Status setzen?"""
     return role in STATUS_PERMISSIONS.get(new_status, set())
 
+def is_allowed_transition(old_status, new_status):
+    """Ist der Übergang vom aktuellen auf den neuen Status zulässig?"""
+    return new_status in ALLOWED_TRANSITIONS.get(old_status, set())
 
 @app.route("/")
 def index():
@@ -150,6 +161,7 @@ def project_detail(project_id):
         statuses=SERVICE_STATUSES,
         status_permissions=STATUS_PERMISSIONS,
         project_statuses=PROJECT_STATUSES,
+        allowed_transitions=ALLOWED_TRANSITIONS,
     )
 
 
@@ -361,11 +373,17 @@ def update_service_status(project_id, service_id):
     if new_status not in SERVICE_STATUSES:
         abort(400)
 
-    # Rollenbasierte Prüfung des Statusübergangs.
+   # Rollenbasierte Prüfung des Statusübergangs.
     if not can_set_status(current_role, new_status):
         abort(403)
 
     old_status = service.status
+
+    # Fachliche Prüfung der Statusfolge.
+    if not is_allowed_transition(old_status, new_status):
+        flash("Dieser Statuswechsel ist nicht vorgesehen.", "error")
+        return redirect(url_for("project_detail", project_id=project_id, role=current_role))
+
     service.status = new_status
 
     AuditEntry.create(

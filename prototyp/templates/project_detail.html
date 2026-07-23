@@ -292,9 +292,11 @@
                                     {{ service.status }}
                                 </span>
 
-                                {% set allowed_targets = [] %}
+                               {% set allowed_targets = [] %}
                                 {% for target_status in statuses %}
-                                    {% if current_role in status_permissions.get(target_status, []) and target_status != service.status %}
+                                    {% if current_role in status_permissions.get(target_status, [])
+                                          and target_status != service.status
+                                          and target_status in allowed_transitions.get(service.status, []) %}
                                         {% set _ = allowed_targets.append(target_status) %}
                                     {% endif %}
                                 {% endfor %}
