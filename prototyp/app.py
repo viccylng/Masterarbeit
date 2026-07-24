@@ -331,6 +331,40 @@ def update_order_number(project_id):
     flash("Bestellnummer des Kunden aktualisiert.", "success")
     return redirect(url_for("project_detail", project_id=project_id, role=current_role))
 
+@app.route("/projects/<int:project_id>/orders/<int:order_id>/update-amount", methods=["POST"])
+def update_order_amount(project_id, order_id):
+    current_role = get_form_role()
+    project = get_project_or_404(project_id, current_role)
+
+    # Korrekturen am Bestellbetrag nimmt nur das Controlling vor.
+    if not can_add_order(current_role):
+        abort(403)
+
+    order = Order.query.get(order_id)
+    if order is None or order.project_id != project.id:
+        abort(404)
+
+    new_amount = parse_positive_number(request.form["amount"])
+    if new_amount is None:
+        flash("Bitte für den Betrag eine positive Zahl angeben.", "error")
+        return redirect(url_for("project_detail", project_id=project_id, role=current_role))
+
+    old_amount = order.amount
+    if new_amount == old_amount:
+        return redirect(url_for("project_detail", project_id=project_id, role=current_role))
+
+    order.amount = new_amount
+
+    AuditEntry.create(
+        project,
+        "Bestellbetrag korrigiert",
+        f"Der Betrag der Bestellung '{order.description}' wurde von {old_amount:.2f} EUR auf {new_amount:.2f} EUR geändert.",
+    )
+
+    db.session.commit()
+    flash("Bestellbetrag wurde korrigiert.", "success")
+    return redirect(url_for("project_detail", project_id=project_id, role=current_role))
+
 @app.route("/projects/<int:project_id>/update-status", methods=["POST"])
 def update_project_status(project_id):
     current_role = get_form_role()

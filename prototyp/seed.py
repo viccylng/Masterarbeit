@@ -15,34 +15,34 @@ from models import db, Project, Service, AuditEntry, Order
 SEED_PROJECTS = [
     {
         "project_number": "P-001",
-        "name": "Projekt A",
-        "customer": "Kundenprojekt 1",
+        "name": "Umrichter Gen3",
+        "customer": "Kunde 1",
         "status": "In Bearbeitung",
         "budget": 50000.00,
         "project_manager": "Projektleitung A",
         "hourly_rate": 120.00,
         "customer_order_number": "4500018231",
         "services": [
-            {"date": "2026-05-01", "description": "Analyse", "hours": 80, "status": "freigegeben"},
-            {"date": "2026-05-03", "description": "Konzeption", "hours": 60, "status": "geprüft"},
-            {"date": "2026-05-08", "description": "Detailauslegung", "hours": 40, "status": "erfasst"},
+            {"date": "2026-05-01", "description": "Anforderungsanalyse", "hours": 80, "status": "freigegeben"},
+            {"date": "2026-05-03", "description": "Reglerkonzept", "hours": 60, "status": "geprüft"},
+            {"date": "2026-05-08", "description": "Detailauslegung Leistungsteil", "hours": 40, "status": "erfasst"},
         ],
         "orders": [
-            {"date": "2026-05-04", "description": "Messtechnik-Sensoren, 5 Stück", "supplier": "Lieferant Alpha", "amount": 3200.00, "status": "bezahlt"},
-            {"date": "2026-05-09", "description": "Prüflingsadapter, 2 Stück", "supplier": "Lieferant Beta", "amount": 1800.00, "status": "offen"},
+            {"date": "2026-05-04", "description": "Messtechnik-Sensoren, 5 Stück", "supplier": "Lieferant 1", "amount": 3200.00, "status": "bezahlt"},
+            {"date": "2026-05-09", "description": "Prüflingsadapter, 2 Stück", "supplier": "Lieferant 2", "amount": 1800.00, "status": "offen"},
         ],
         "audit_log": [
             {
                 "timestamp": "2026-05-15 10:00",
                 "action": "Projekt angelegt",
-                "details": "Projekt A wurde als Beispielprojekt im Prototyp angelegt.",
+                "details": "Projekt Umrichter Gen3 wurde als Beispielprojekt im Prototyp angelegt.",
             }
         ],
     },
     {
         "project_number": "P-002",
-        "name": "Projekt B",
-        "customer": "Kundenprojekt 2",
+        "name": "Support Serienanlauf HW",
+        "customer": "Kunde 2",
         "status": "Angebot",
         "budget": 30000.00,
         "project_manager": "Projektleitung B",
@@ -51,20 +51,20 @@ SEED_PROJECTS = [
             {"date": "2026-05-02", "description": "Prüfung", "hours": 40, "status": "geprüft"},
         ],
         "orders": [
-            {"date": "2026-05-06", "description": "Kabelsatz HV, 1 Satz", "supplier": "Lieferant Gamma", "amount": 2500.00, "status": "offen"},
+            {"date": "2026-05-06", "description": "Kabelsatz HV, 1 Satz", "supplier": "Lieferant 3", "amount": 2500.00, "status": "offen"},
         ],
         "audit_log": [
             {
                 "timestamp": "2026-05-15 10:05",
                 "action": "Projekt angelegt",
-                "details": "Projekt B wurde als Beispielprojekt im Prototyp angelegt.",
+                "details": "Support Serienanlauf HW wurde als Beispielprojekt im Prototyp angelegt.",
             }
         ],
     },
     {
         "project_number": "P-003",
-        "name": "Projekt C",
-        "customer": "Kundenprojekt 3",
+        "name": "E-Maschine 800V",
+        "customer": "Kunde 3",
         "status": "In Bearbeitung",
         "budget": 40000.00,
         "project_manager": "Projektleitung A",
@@ -77,14 +77,14 @@ SEED_PROJECTS = [
             {"date": "2026-05-14", "description": "Testvorbereitung", "hours": 30, "status": "erfasst"},
         ],
         "orders": [
-            {"date": "2026-05-08", "description": "Leistungselektronik-Module, 3 Stück", "supplier": "Lieferant Delta", "amount": 4200.00, "status": "bezahlt"},
-            {"date": "2026-05-13", "description": "Wicklungsmaterial, Sonderposten", "supplier": "Lieferant Epsilon", "amount": 2600.00, "status": "offen"},
+            {"date": "2026-05-08", "description": "Leistungselektronik-Module, 3 Stück", "supplier": "Lieferant 4", "amount": 4200.00, "status": "bezahlt"},
+            {"date": "2026-05-13", "description": "Wicklungsmaterial, Sonderposten", "supplier": "Lieferant 5", "amount": 2600.00, "status": "offen"},
         ],
         "audit_log": [
             {
                 "timestamp": "2026-05-15 10:10",
                 "action": "Projekt angelegt",
-                "details": "Projekt C wurde als Beispielprojekt im Prototyp angelegt.",
+                "details": "E-Maschine 800V wurde als Beispielprojekt im Prototyp angelegt.",
             }
         ],
     },
