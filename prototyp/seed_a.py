@@ -4,7 +4,7 @@ Legt die Tabellen an und spielt die Beispielprojekte ein. Bei jedem Aufruf
 wird der Datenbestand zurueckgesetzt, sodass für die Evaluation ein
 einheitlicher und reproduzierbarer Ausgangszustand vorliegt.
 
-Aufruf:  python seed.py
+Aufruf:  python seed_a.py
 """
 
 from app import app
