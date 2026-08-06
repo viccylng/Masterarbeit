@@ -296,9 +296,9 @@ button:hover {
     line-height: 1;
 }
 
-.status-in-bearbeitung {
-    background: #dbeafe;
-    color: #1d4ed8;
+.status-anfrage {
+    background: #f1f5f9;
+    color: #475569;
 }
 
 .status-angebot {
@@ -306,12 +306,27 @@ button:hover {
     color: #b45309;
 }
 
-.status-beauftragt {
+.status-zusage {
+    background: #ffedd5;
+    color: #c2410c;
+}
+
+.status-bestellung {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.status-teilrechnung {
+    background: #cffafe;
+    color: #0e7490;
+}
+
+.status-abgerechnet {
     background: #dcfce7;
     color: #15803d;
 }
 
-.status-abgerechnet {
+.status-eigenentwicklung {
     background: #e0e7ff;
     color: #4338ca;
 }

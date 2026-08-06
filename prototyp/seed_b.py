@@ -17,7 +17,7 @@ SEED_PROJECTS = [
         "project_number": "P-001",
         "name": "Umrichter Gen3",
         "customer": "Kunde 1",
-        "status": "In Bearbeitung",
+        "status": "Bestellung",
         "budget": 68000.00,
         "project_manager": "Projektleitung A",
         "hourly_rate": 120.00,
@@ -28,7 +28,7 @@ SEED_PROJECTS = [
             {"date": "2026-05-08", "description": "Detailauslegung Leistungsteil", "hours": 40, "status": "erfasst"},
         ],
         "orders": [
-            {"date": "2026-05-04", "description": "Messtechnik-Sensoren, 5 Stück", "supplier": "Lieferant 1", "amount": 3200.00, "status": "bezahlt"},
+            {"date": "2026-05-04", "description": "Messtechnik-Sensoren, 5 Stück", "supplier": "Lieferant 1", "amount": 3200.00, "status": "offen"},
             {"date": "2026-05-09", "description": "Prüflingsadapter, 2 Stück", "supplier": "Lieferant 2", "amount": 1800.00, "status": "offen"},
         ],
         "audit_log": [
@@ -65,7 +65,7 @@ SEED_PROJECTS = [
         "project_number": "P-003",
         "name": "E-Maschine 800V",
         "customer": "Kunde 3",
-        "status": "In Bearbeitung",
+        "status": "Bestellung",
         "budget": 56000.00,
         "project_manager": "Projektleitung A",
         "hourly_rate": 110.00,
@@ -77,7 +77,7 @@ SEED_PROJECTS = [
             {"date": "2026-05-14", "description": "Testvorbereitung", "hours": 30, "status": "erfasst"},
         ],
         "orders": [
-            {"date": "2026-05-08", "description": "Leistungselektronik-Module, 3 Stück", "supplier": "Lieferant 4", "amount": 4200.00, "status": "bezahlt"},
+            {"date": "2026-05-08", "description": "Leistungselektronik-Module, 3 Stück", "supplier": "Lieferant 4", "amount": 4200.00, "status": "offen"},
             {"date": "2026-05-13", "description": "Wicklungsmaterial, Sonderposten", "supplier": "Lieferant 5", "amount": 2600.00, "status": "offen"},
         ],
         "audit_log": [

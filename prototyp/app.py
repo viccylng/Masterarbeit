@@ -58,7 +58,7 @@ AVAILABLE_ROLES = {
 SERVICE_STATUSES = ["erfasst", "geprüft", "freigegeben"]
 
 # Projektstatus
-PROJECT_STATUSES = ["Angebot", "Beauftragt", "In Bearbeitung", "Abgerechnet", "Gestorben"]
+PROJECT_STATUSES = ["Anfrage", "Angebot", "Zusage", "Bestellung", "Teilrechnung", "Abgerechnet", "Eigenentwicklung", "Gestorben"]
 
 # Rollenbasierte Rechte für die Statusübergänge.
 # Projektleitung darf prüfen, Controlling gibt final frei.
@@ -143,6 +143,7 @@ def index():
         projects=visible_projects,
         current_role=current_role,
         available_roles=AVAILABLE_ROLES,
+        project_statuses=PROJECT_STATUSES,
     )
 
 
@@ -284,7 +285,7 @@ def add_project():
         project_number=project_number,
         name=name,
         customer=customer,
-        status="In Bearbeitung",
+        status=request.form.get("status") if request.form.get("status") in PROJECT_STATUSES else "Angebot",
         budget=budget,
         project_manager=project_manager,
         hourly_rate=hourly_rate,
