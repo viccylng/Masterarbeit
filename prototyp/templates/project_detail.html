@@ -128,6 +128,17 @@
                 <button type="submit" class="secondary-button">Speichern</button>
             </form>
             {% endif %}
+
+            {% if current_role == "controlling" %}
+            <form action="{{ url_for('update_project_stammdaten', project_id=project.id) }}" method="post" class="order-number-form">
+                <input type="hidden" name="role" value="{{ current_role }}">
+                <label for="budget">Budget bzw. Stundensatz korrigieren:</label>
+                <input type="text" id="budget" name="budget" placeholder="neues Budget">
+                <input type="text" id="hourly_rate" name="hourly_rate" placeholder="neuer Stundensatz">
+                <button type="submit" class="secondary-button">Speichern</button>
+            </form>
+            {% endif %}
+
         </section>
 
         <section class="card">
@@ -183,6 +194,11 @@
                 <input type="hidden" name="role" value="{{ current_role }}">
 
                 <div class="form-row">
+                    <label for="order-number">BE-Nr.</label>
+                    <input type="text" id="order-number" name="order_number" required>
+                </div>
+
+                <div class="form-row">
                     <label for="order-date">Datum</label>
                     <input type="date" id="order-date" name="date" required>
                 </div>
@@ -199,7 +215,7 @@
 
                 <div class="form-row">
                     <label for="order-amount">Betrag (€)</label>
-                    <input type="number" id="order-amount" name="amount" step="0.01" min="0.01" required
+                    <input type="text" id="order-amount" name="amount" required
                            title="Bitte einen positiven Betrag angeben.">
                 </div>
 
@@ -213,6 +229,7 @@
                 <table>
                     <thead>
                         <tr>
+                            <th>BE-Nr.</th>
                             <th>Datum</th>
                             <th>Bezeichnung</th>
                             <th>Lieferant</th>
@@ -223,6 +240,7 @@
                     <tbody>
                         {% for order in project.orders %}
                         <tr>
+                            <td>{{ order.order_number or "–" }}</td>
                             <td>{{ order.date }}</td>
                             <td>{{ order.description }}</td>
                             <td>{{ order.supplier }}</td>
@@ -231,8 +249,8 @@
                                 {% if can_add_order %}
                                 <form action="{{ url_for('update_order_amount', project_id=project.id, order_id=order.id) }}" method="post" class="inline-form">
                                     <input type="hidden" name="role" value="{{ current_role }}">
-                                    <input type="number" name="amount" step="0.01" min="0.01"
-                                           value="{{ order.amount }}" title="Betrag korrigieren">
+                                     <input type="text" name="amount"
+                                           placeholder="neuer Betrag" title="Betrag korrigieren">
                                     <button type="submit">Betrag ändern</button>
                                 </form>
                                 {% endif %}
@@ -274,7 +292,7 @@
 
                 <div class="form-row">
                     <label for="hours">Stunden</label>
-                    <input type="number" id="hours" name="hours" step="0.25" min="0.25" required
+                    <input type="text" id="hours" name="hours" required
                            title="Bitte eine positive Stundenzahl angeben.">
                 </div>
 

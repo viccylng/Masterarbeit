@@ -336,6 +336,16 @@ button:hover {
     color: #7e22ce;
 }
 
+.status-offen {
+    background: #ffedd5;
+    color: #c2410c;
+}
+
+.status-bezahlt {
+    background: #dcfce7;
+    color: #15803d;
+}
+
 .status-erfasst {
     background: #fce7f3;
     color: #be185d;
@@ -442,7 +452,7 @@ button:hover {
 }
 
 .amount-cell .inline-form {
-    margin-top: 6px;
+    margin-top: 4px;
     display: flex;
     gap: 6px;
     align-items: center;
@@ -450,8 +460,19 @@ button:hover {
 
 .amount-cell .inline-form input {
     width: 110px;
-    padding: 6px 8px;
+    padding: 4px 8px;
     border: 1px solid #cbd2d9;
     border-radius: 6px;
-    font-size: 14px;
+    font-size: 13px;
+}
+
+.amount-cell .inline-form input::placeholder {
+    color: #9aa5b1;
+}
+
+.amount-cell .inline-form button {
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
 }

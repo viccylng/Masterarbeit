@@ -28,8 +28,8 @@ SEED_PROJECTS = [
             {"date": "2026-05-08", "description": "Detailauslegung Leistungsteil", "hours": 40, "status": "erfasst"},
         ],
         "orders": [
-            {"date": "2026-05-04", "description": "Messtechnik-Sensoren, 5 Stück", "supplier": "Lieferant 1", "amount": 3200.00, "status": "offen"},
-            {"date": "2026-05-09", "description": "Prüflingsadapter, 2 Stück", "supplier": "Lieferant 2", "amount": 1800.00, "status": "offen"},
+            {"date": "2026-05-04", "order_number": "BE-2026-001", "description": "Messtechnik-Sensoren, 5 Stück", "supplier": "Lieferant 1", "amount": 3200.00, "status": "offen"},
+            {"date": "2026-05-09", "order_number": "BE-2026-004","description": "Prüflingsadapter, 2 Stück", "supplier": "Lieferant 2", "amount": 1800.00, "status": "offen"},
         ],
         "audit_log": [
             {
@@ -51,7 +51,7 @@ SEED_PROJECTS = [
             {"date": "2026-05-02", "description": "Prüfung", "hours": 40, "status": "geprüft"},
         ],
         "orders": [
-            {"date": "2026-05-06", "description": "Kabelsatz HV, 1 Satz", "supplier": "Lieferant 3", "amount": 2500.00, "status": "offen"},
+            {"date": "2026-05-06", "order_number": "BE-2026-002", "description": "Kabelsatz HV, 1 Satz", "supplier": "Lieferant 3", "amount": 2500.00, "status": "offen"},
         ],
         "audit_log": [
             {
@@ -77,8 +77,8 @@ SEED_PROJECTS = [
             {"date": "2026-05-14", "description": "Testvorbereitung", "hours": 30, "status": "erfasst"},
         ],
         "orders": [
-            {"date": "2026-05-08", "description": "Leistungselektronik-Module, 3 Stück", "supplier": "Lieferant 4", "amount": 4200.00, "status": "offen"},
-            {"date": "2026-05-13", "description": "Wicklungsmaterial, Sonderposten", "supplier": "Lieferant 5", "amount": 2600.00, "status": "offen"},
+            {"date": "2026-05-08", "order_number": "BE-2026-003", "description": "Leistungselektronik-Module, 3 Stück", "supplier": "Lieferant 4", "amount": 4200.00, "status": "offen"},
+            {"date": "2026-05-13", "order_number": "BE-2026-005", "description": "Wicklungsmaterial, Sonderposten", "supplier": "Lieferant 5", "amount": 2600.00, "status": "offen"},
         ],
         "audit_log": [
             {

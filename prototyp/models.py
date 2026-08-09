@@ -115,6 +115,7 @@ class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     project_id = db.Column(db.Integer, db.ForeignKey("projects.id"), nullable=False)
     date = db.Column(db.String(20), nullable=False)
+    order_number = db.Column(db.String(50))
     description = db.Column(db.String(300), nullable=False)
     supplier = db.Column(db.String(200), nullable=False)
     amount = db.Column(db.Float, nullable=False, default=0.0)

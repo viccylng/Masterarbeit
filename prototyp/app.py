@@ -40,7 +40,12 @@ def parse_positive_number(raw_value):
     sonst None.
     """
     try:
-        number = float(str(raw_value).replace(",", "."))
+        cleaned = str(raw_value).strip().replace(" ", "").replace("€", "")
+        if "," in cleaned:
+            cleaned = cleaned.replace(".", "").replace(",", ".")
+        elif cleaned.count(".") == 1 and len(cleaned.split(".")[1]) == 3:
+            cleaned = cleaned.replace(".", "")
+        number = float(cleaned)
     except (TypeError, ValueError):
         return None
     if number <= 0:
@@ -231,6 +236,7 @@ def add_order(project_id):
     # Neue Bestellungen starten standardmässig im Status 'offen'.
     new_order = Order(
         date=request.form["date"],
+        order_number=request.form.get("order_number", "").strip(),
         description=description,
         supplier=supplier,
         amount=amount,
@@ -330,6 +336,53 @@ def update_order_number(project_id):
     AuditEntry.create(project, "Bestellnummer aktualisiert", details)
     db.session.commit()
     flash("Bestellnummer des Kunden aktualisiert.", "success")
+    return redirect(url_for("project_detail", project_id=project_id, role=current_role))
+
+@app.route("/projects/<int:project_id>/update-stammdaten", methods=["POST"])
+def update_project_stammdaten(project_id):
+    current_role = get_form_role()
+    project = get_project_or_404(project_id, current_role)
+
+    # Korrekturen an den kaufmännischen Stammdaten nimmt nur das Controlling vor.
+    if not can_add_project(current_role):
+        abort(403)
+
+    changed = False
+
+    raw_budget = request.form.get("budget", "").strip()
+    if raw_budget:
+        new_budget = parse_positive_number(raw_budget)
+        if new_budget is None:
+            flash("Bitte für das Budget eine positive Zahl angeben.", "error")
+            return redirect(url_for("project_detail", project_id=project_id, role=current_role))
+        if new_budget != project.budget:
+            AuditEntry.create(
+                project,
+                "Budget korrigiert",
+                f"Das Budget wurde von {project.budget:.2f} EUR auf {new_budget:.2f} EUR geändert.",
+            )
+            project.budget = new_budget
+            changed = True
+
+    raw_rate = request.form.get("hourly_rate", "").strip()
+    if raw_rate:
+        new_rate = parse_positive_number(raw_rate)
+        if new_rate is None:
+            flash("Bitte für den Stundensatz eine positive Zahl angeben.", "error")
+            return redirect(url_for("project_detail", project_id=project_id, role=current_role))
+        if new_rate != project.hourly_rate:
+            AuditEntry.create(
+                project,
+                "Stundensatz korrigiert",
+                f"Der Stundensatz wurde von {project.hourly_rate:.2f} EUR auf {new_rate:.2f} EUR geändert.",
+            )
+            project.hourly_rate = new_rate
+            changed = True
+
+    if changed:
+        db.session.commit()
+        flash("Projektdaten wurden korrigiert.", "success")
+
     return redirect(url_for("project_detail", project_id=project_id, role=current_role))
 
 @app.route("/projects/<int:project_id>/orders/<int:order_id>/update-amount", methods=["POST"])
