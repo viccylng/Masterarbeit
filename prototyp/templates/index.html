@@ -28,7 +28,7 @@
         <section class="card">
             <div class="card-header">
                 <h2>Aktive Rolle</h2>
-                <p>Die gewählte Rolle steuert, welche Projekte sichtbar sind und welche Bearbeitungsschritte möglich bleiben.</p>
+                <p>Die gewählte Rolle steuert, welche Projekte sichtbar sind und welche Bearbeitungsrechte bestehen.</p>
             </div>
 
             <form action="{{ url_for('index') }}" method="get" class="role-form">
@@ -95,13 +95,13 @@
                 </div>
 
                 <div class="form-row">
-                    <label for="budget">Budget (€)</label>
+                    <label for="budget">Budget netto (€)</label>
                     <input type="text" id="budget" name="budget" required
                            title="Bitte ein positives Budget angeben.">
                 </div>
 
                 <div class="form-row">
-                    <label for="hourly_rate">Stundensatz (€)</label>
+                    <label for="hourly_rate">Stundensatz netto (€)</label>
                     <input type="text" id="hourly_rate" name="hourly_rate" required
                            title="Bitte einen positiven Stundensatz angeben.">
                 </div>
