@@ -1,6 +1,6 @@
 # Lean-ERP-Prototyp zur Projektkontrolle
 
-Prototyp zur Masterarbeit „Lean-ERP zur Projektkontrolle: Prototypische Entwicklung und Entscheidungshilfe für den Übergang von Excel zu ERP-Systemen in klei-nen Ingenieurdienstleistungsunternehmen" von
+Prototyp zur Masterarbeit „Lean-ERP zur Projektkontrolle: Prototypische Entwicklung, Evaluation und Entscheidungshilfe für den Übergang von Excel zu ERP-Systemen in kleinen Ingenieurdienstleistungsunternehmen" von
 Victoria Langner, Studiengang Information Systems,
 Julius-Maximilians-Universität Würzburg, 2026.
 
@@ -14,7 +14,13 @@ der in der Arbeit beschriebenen Evaluation.
 
 Python 3.12 oder neuer.
 
+Unter Windows bei der Installation von python.org die Option
+"Add Python to PATH" aktivieren. Ohne diese Einstellung wird der
+Befehl python in der Konsole nicht gefunden.
+
 ## Installation
+
+**macOS / Linux**
 
 ```
 cd prototyp
@@ -23,7 +29,23 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Unter Windows lautet die Aktivierung .venv\Scripts\activate
+**Windows (PowerShell)**
+
+```
+cd prototyp
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
+
+**Windows (Eingabeaufforderung)**
+
+```
+cd prototyp
+python -m venv .venv
+.venv\Scripts\activate.bat
+pip install -r requirements.txt
+```
 
 ## Start
 
@@ -34,7 +56,7 @@ python seed_a.py
 python app.py
 ```
 
-Die Anwendung ist anschließend unter http://127.0.0.1:5000 erreichbar.
+Die Anwendung ist anschließend unter http://127.0.0.1:5001 erreichbar.
 Vor dem erneuten Einspielen muss die Anwendung beendet werden, sonst bleibt
 der alte Datenbestand teilweise erhalten.
 
@@ -67,6 +89,11 @@ dokumentation/entscheidungen.md   Designentscheidungen während der Umsetzung
 ```
 
 ## Hinweise und Grenzen
+
+Entwickelt unter macOS. Die Installationsschritte sind
+plattformunabhängig, unter Windows wurde die Anwendung nicht
+systematisch erprobt. Port 5001 wurde gewählt, weil Port 5000
+unter macOS vom AirPlay-Empfänger belegt ist.
 
 Es handelt sich um einen Forschungsprototyp, nicht um ein produktives System.
 
