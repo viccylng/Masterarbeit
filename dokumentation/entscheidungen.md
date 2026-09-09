@@ -1,7 +1,7 @@
-## Aktueller Entwicklungsstand des Prototyps
+## Entwicklungsstand des Prototyps zum Abschluss der Arbeit
 
 ### Grundlegende Architekturentscheidung
-Für den Prototyp wurde eine browserbasierte Web-Anwendung aus Basis von Flask gewählt. Die Entscheidung für Flask erfolgt, weil für das Vorhaben zunächst kein komplexes verteiltes System erforderlich ist, sondern ein schlanker und nachvollziehbarer Prototyp mit klarer Trennung zwischen Anwendungslogik, Templates und Styling. Die Anwendung wurde bewusst inkrementell aufgebaut, um fachliche Kernkompetenzen zunächst mit möglichst geringer technischer Komplexität umzusetzen.
+Für den Prototyp wurde eine browserbasierte Web-Anwendung auf Basis von Flask gewählt. Die Entscheidung für Flask erfolgt, weil für das Vorhaben zunächst kein komplexes verteiltes System erforderlich ist, sondern ein schlanker und nachvollziehbarer Prototyp mit klarer Trennung zwischen Anwendungslogik, Templates und Styling. Die Anwendung wurde bewusst inkrementell aufgebaut, um fachliche Kernkompetenzen zunächst mit möglichst geringer technischer Komplexität umzusetzen.
 
 ### Umgang mit Daten im frühen Prototypenstadium
 Zu Beginn wurde mit Mock-Daten gearbeitet, um die fachliche Logik unabhängig von einer produktiven Datenanbindung entwickeln und testen zu können. Nachdem der Prototyp mehrere Funktionen umfasste, wurden die Beispieldaten aus app.py in eine eigene Datei ausgelagert, um die Anwendungslogik übersichtlicher zu halten und spätere Anpassungen an Evaluationsdaten zu erleichtern.
@@ -41,6 +41,6 @@ Mehrere Funktionen wurden im aktuellen Prototypen bewusst nicht umgesetzt, um de
 - keine produktiven Schnittstellen zu Zeiterfassung, Rechnungswesen oder anderen Vorsystemen
 - kein vollständiges Login- oder Benutzerverwaltungssystem
 - keine vollständige Rechnungserstellung mit Buchungslogik
-- keine umfassende ERP-Funktionalität ausßerhalb der Projekkontrolle
+- keine umfassende ERP-Funktionalität ausßerhalb der Projektkontrolle
 
 Der Prototyp ist damit bewusst auf diejenigen Funktionen begrenzt, die für Projektkontrolle, Statusnachvollziehbarkeit und Rechnungsentwurf im Anwendungskontext zentral sind.
